@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "profile")
@@ -11,8 +12,12 @@ import javax.persistence.*;
 @Setter
 public class Profile {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long profileId;
     private String firstName;
     private String lastName;
+    private LocalDateTime birthDate;
+    @OneToOne
+    @JoinColumn(name = "addressId", referencedColumnName = "addressId")
+    private Address homeAddress;
 }

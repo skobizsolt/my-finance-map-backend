@@ -12,15 +12,16 @@ import java.time.LocalDateTime;
 @Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    @Column(unique = true)
     private Long publicId;
     private String username;
     private String email;
     private String password;
     private Boolean isAdmin;
     private LocalDateTime registrationDate;
-    @ManyToOne
-    @JoinColumn(name = "profileId")
+    @OneToOne
+    @JoinColumn(name = "profileId", referencedColumnName = "profileId")
     private Profile profile;
 }

@@ -121,6 +121,9 @@ components:
     Address:
       type: object
       properties:
+        addressId:
+          type: integer
+          format: long
         postalCode:
           type: string
         country:
@@ -134,7 +137,7 @@ components:
         streetType:
           type: string
         houseNumber:
-          type: integer
+          type: string
         afterHouseNumber:
           type: string
     User:
@@ -186,11 +189,6 @@ components:
           format: BigDecimal
         paymentMethod:
           type: string
-          enum:
-            - Cash
-            - Card
-            - Crypto
-            - Other
         user:
           $ref: '#/components/schemas/User'
     Shop:
