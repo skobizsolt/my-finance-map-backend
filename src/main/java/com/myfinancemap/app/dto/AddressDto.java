@@ -1,17 +1,9 @@
-package com.myfinancemap.app.persistence.domain;
+package com.myfinancemap.app.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "address")
-@Getter
-@Setter
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Data
+public class AddressDto {
     private Long addressId;
     private String postalCode;
     private String country;

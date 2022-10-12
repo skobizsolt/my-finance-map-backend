@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,10 +15,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "integer auto_increment")
     private Long publicId;
+    @Column(unique = true)
+    @NotNull
     private String username;
+    @NotNull
     private String email;
+    @NotNull
     private String password;
     private Boolean isAdmin;
     private LocalDateTime registrationDate;
