@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Default implementation of User service.
+ */
 @Service
 public class DefaultUserService implements UserService {
 

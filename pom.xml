@@ -9,15 +9,17 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.myfinancemap</groupId>
-	<artifactId>myfinancemap</artifactId>
+	<artifactId>myfinancemap-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>myfinancemap</name>
+	<name>myfinancemap-service</name>
 	<description>Backend for myFinanceMap</description>
 	<properties>
 		<java.version>17</java.version>
-		<mapstruct-version>1.5.2.Final</mapstruct-version>
-		<lombok-version>1.18.24</lombok-version>
-		<openapi-version>1.6.4</openapi-version>
+		<mapstruct.version>1.5.2.Final</mapstruct.version>
+		<lombok.version>1.18.24</lombok.version>
+		<openapi.version>1.6.4</openapi.version>
+		<javax-validation.version>2.0.1.Final</javax-validation.version>
+		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -53,7 +55,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok-version}</version>
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -70,12 +72,22 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct-version}</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>${openapi-version}</version>
+			<version>${openapi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>${javax-validation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -119,12 +131,12 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>${lombok-version}</version>
+							<version>${lombok.version}</version>
 						</path>
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
-							<version>${mapstruct-version}</version>
+							<version>${mapstruct.version}</version>
 						</path>
 						<!-- other annotation processors -->
 					</annotationProcessorPaths>

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "shop")
@@ -15,7 +16,9 @@ public class Shop {
     private Long shopId;
     @ManyToOne
     @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
+    @NotNull
     private BusinessCategory businessCategory;
+    @NotNull
     private String name;
     private String coordinateX;
     private String coordinateY;
