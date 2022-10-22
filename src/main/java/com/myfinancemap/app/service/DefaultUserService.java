@@ -24,17 +24,26 @@ public class DefaultUserService implements UserService {
         this.userMapper = userMapper;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public List<MinimalUserDto> getAllUsers() {
         return userMapper.usersToUserMinimalUserDtoList(userRepository.findAll());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public UserDto getUserById(Long userId) {
         final User user = userRepository.getUserByUserId(userId).orElse(null);
         return userMapper.userToUserDto(user);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public MinimalUserDto createUser(CreateUserDto createUserDto) {
         if (createUserDto != null) {
@@ -45,6 +54,9 @@ public class DefaultUserService implements UserService {
         return new MinimalUserDto();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void deleteUser(Long userId) {
         userRepository.getUserByUserId(userId).ifPresent(userRepository::delete);
