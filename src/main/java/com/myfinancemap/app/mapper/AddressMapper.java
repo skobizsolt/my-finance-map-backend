@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Mapper
 @Component
 public interface AddressMapper {
-    AddressDto addressToAddressDto (Address address);
+    AddressDto toAddressDto(Address address);
 }

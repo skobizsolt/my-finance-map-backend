@@ -17,13 +17,13 @@ import java.util.List;
 @Component
 public interface UserMapper {
     @Named("userDtoMapper")
-    UserDto userToUserDto(User user);
+    UserDto toUserDto(User user);
 
     @Named("minimalUserDtoMapper")
-    MinimalUserDto userToMinimalUserDto(User user);
+    MinimalUserDto toMinimalUserDto(User user);
     @IterableMapping(qualifiedByName = "minimalUserDtoMapper")
-    List<MinimalUserDto> usersToUserMinimalUserDtoList(List<User> users);
+    List<MinimalUserDto> toMinimalUserDtoList(List<User> users);
 
     @Mapping(target = "registrationDate", expression = "java(LocalDateTime.now())")
-    User createUserDtoToUser(CreateUserDto dto);
+    User toUser(CreateUserDto dto);
 }

@@ -29,7 +29,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public List<MinimalUserDto> getAllUsers() {
-        return userMapper.usersToUserMinimalUserDtoList(userRepository.findAll());
+        return userMapper.toMinimalUserDtoList(userRepository.findAll());
     }
 
     /**
@@ -38,7 +38,7 @@ public class DefaultUserService implements UserService {
     @Override
     public UserDto getUserById(Long userId) {
         final User user = userRepository.getUserByUserId(userId).orElse(null);
-        return userMapper.userToUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     /**
@@ -47,9 +47,9 @@ public class DefaultUserService implements UserService {
     @Override
     public MinimalUserDto createUser(CreateUserDto createUserDto) {
         if (createUserDto != null) {
-            final User user = userMapper.createUserDtoToUser(createUserDto);
+            final User user = userMapper.toUser(createUserDto);
             userRepository.save(user);
-            return userMapper.userToUserDto(user);
+            return userMapper.toUserDto(user);
         }
         return new MinimalUserDto();
     }

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Mapper(uses = AddressMapper.class)
 @Component
 public interface ProfileMapper {
-    ProfileDto profileToProfileDto(Profile profile);
+    ProfileDto toProfileDto(Profile profile);
 }

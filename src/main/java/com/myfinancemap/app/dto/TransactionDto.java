@@ -1,7 +1,6 @@
 package com.myfinancemap.app.dto;
 
 import com.myfinancemap.app.persistence.domain.PaymentMethod;
-import com.myfinancemap.app.persistence.domain.User;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,5 +12,4 @@ public class TransactionDto {
     private BigDecimal cost;
     private PaymentMethod paymentMethod;
     private Boolean isIncome;
-    private User user;
 }
