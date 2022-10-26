@@ -1,6 +1,5 @@
 package com.myfinancemap.app.mapper;
 
-import com.myfinancemap.app.dto.CreateTransactionDto;
 import com.myfinancemap.app.dto.TransactionDto;
 import com.myfinancemap.app.persistence.domain.Transaction;
 import org.mapstruct.IterableMapping;
@@ -21,7 +20,8 @@ public interface TransactionMapper {
     @IterableMapping(qualifiedByName = "transactionDtoMapper")
     List<TransactionDto> toTransactionDtoList(List<Transaction> transactions);
 
-    Transaction toTransaction(CreateTransactionDto createTransactionDto);
+    Transaction toTransaction(TransactionDto transactionDto);
 
-    void modifyTransaction(CreateTransactionDto createTransactionDto, @MappingTarget Transaction transaction);
+    void modifyTransaction(TransactionDto transactionDto, @MappingTarget Transaction transaction);
+
 }

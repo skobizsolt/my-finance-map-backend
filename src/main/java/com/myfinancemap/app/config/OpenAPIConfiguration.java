@@ -18,8 +18,8 @@ public class OpenAPIConfiguration {
                 .components(new Components()
                         .addSecuritySchemes("token",
                                 new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
-                .info(new Info().title("MyFinenceMap API")
-                        .description("MyFinenceMap backend API"));
+                .info(new Info().title("MyFinanceMap API")
+                        .description("MyFinanceMap backend API"));
     }
 }
 

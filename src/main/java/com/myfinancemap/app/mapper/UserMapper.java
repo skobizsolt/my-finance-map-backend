@@ -21,6 +21,7 @@ public interface UserMapper {
 
     @Named("minimalUserDtoMapper")
     MinimalUserDto toMinimalUserDto(User user);
+
     @IterableMapping(qualifiedByName = "minimalUserDtoMapper")
     List<MinimalUserDto> toMinimalUserDtoList(List<User> users);
 

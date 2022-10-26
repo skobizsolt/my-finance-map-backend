@@ -9,6 +9,8 @@ import com.myfinancemap.app.persistence.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 /**
  * Default implementation of User service.
@@ -37,7 +39,10 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public UserDto getUserById(Long userId) {
-        final User user = userRepository.getUserByUserId(userId).orElse(null);
+        final User user = userRepository.getUserByUserId(userId)
+                .orElseThrow(() -> {
+                    throw new NoSuchElementException("Felhasználó nem található!");
+                });
         return userMapper.toUserDto(user);
     }
 
@@ -46,12 +51,11 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public MinimalUserDto createUser(CreateUserDto createUserDto) {
-        if (createUserDto != null) {
-            final User user = userMapper.toUser(createUserDto);
-            userRepository.save(user);
-            return userMapper.toUserDto(user);
-        }
-        return new MinimalUserDto();
+        //TODO: publicId generation problem
+        final User user = userMapper.toUser(createUserDto);
+        user.setPublicId(UUID.randomUUID().toString());
+        userRepository.save(user);
+        return userMapper.toUserDto(user);
     }
 
     /**
@@ -59,6 +63,10 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void deleteUser(Long userId) {
-        userRepository.getUserByUserId(userId).ifPresent(userRepository::delete);
+        final User user = userRepository.getUserByUserId(userId)
+                .orElseThrow(() -> {
+                    throw new NoSuchElementException("Felhasználó nem található!");
+                });
+        userRepository.delete(user);
     }
 }
