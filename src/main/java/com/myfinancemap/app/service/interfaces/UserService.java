@@ -1,8 +1,9 @@
-package com.myfinancemap.app.service;
+package com.myfinancemap.app.service.interfaces;
 
-import com.myfinancemap.app.dto.CreateUserDto;
-import com.myfinancemap.app.dto.MinimalUserDto;
-import com.myfinancemap.app.dto.UserDto;
+import com.myfinancemap.app.dto.user.CreateUserDto;
+import com.myfinancemap.app.dto.user.MinimalUserDto;
+import com.myfinancemap.app.dto.user.UpdateUserDto;
+import com.myfinancemap.app.dto.user.UserDto;
 
 import java.util.List;
 
@@ -39,4 +40,13 @@ public interface UserService {
      * @param userId id of the user we want to delete.
      */
     void deleteUser(final Long userId);
+
+    /**
+     * Method for updating an existing user's profile and address.
+     *
+     * @param userId        id of the user we want to update.
+     * @param updateUserDto data of the user we want to update.
+     * @return the updated user's data.
+     */
+    UserDto updateUser(final Long userId, final UpdateUserDto updateUserDto);
 }
