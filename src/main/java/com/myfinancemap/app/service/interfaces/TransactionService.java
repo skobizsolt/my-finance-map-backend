@@ -1,6 +1,6 @@
 package com.myfinancemap.app.service.interfaces;
 
-import com.myfinancemap.app.dto.transaction.TotalCostResponse;
+import com.myfinancemap.app.dto.TotalCostResponse;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 
 import java.time.LocalDate;

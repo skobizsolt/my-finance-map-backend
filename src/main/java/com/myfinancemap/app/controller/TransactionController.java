@@ -1,8 +1,8 @@
 package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
-import com.myfinancemap.app.dto.TransactionDto;
-import com.myfinancemap.app.service.TransactionService;
+import com.myfinancemap.app.dto.transaction.TransactionDto;
+import com.myfinancemap.app.service.interfaces.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;

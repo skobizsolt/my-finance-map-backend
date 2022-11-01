@@ -1,6 +1,6 @@
 package com.myfinancemap.app.mapper;
 
-import com.myfinancemap.app.dto.TransactionDto;
+import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.persistence.domain.Transaction;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;

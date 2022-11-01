@@ -1,13 +1,11 @@
 package com.myfinancemap.app.mapper;
 
-import com.myfinancemap.app.dto.CreateUserDto;
-import com.myfinancemap.app.dto.MinimalUserDto;
-import com.myfinancemap.app.dto.UserDto;
+import com.myfinancemap.app.dto.user.CreateUserDto;
+import com.myfinancemap.app.dto.user.MinimalUserDto;
+import com.myfinancemap.app.dto.user.UpdateUserDto;
+import com.myfinancemap.app.dto.user.UserDto;
 import com.myfinancemap.app.persistence.domain.User;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -27,4 +25,6 @@ public interface UserMapper {
 
     @Mapping(target = "registrationDate", expression = "java(LocalDateTime.now())")
     User toUser(CreateUserDto dto);
+
+    void modifyUser(UpdateUserDto updateUserDto, @MappingTarget User user);
 }

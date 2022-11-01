@@ -1,12 +1,13 @@
 package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
-import com.myfinancemap.app.dto.TransactionDto;
+import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.mapper.TransactionMapper;
 import com.myfinancemap.app.persistence.domain.Transaction;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.repository.TransactionRepository;
 import com.myfinancemap.app.persistence.repository.UserRepository;
+import com.myfinancemap.app.service.interfaces.TransactionService;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ValidationException;
