@@ -1,4 +1,4 @@
-package com.myfinancemap.app.dto;
+package com.myfinancemap.app.dto.address;
 
 import lombok.Data;
 

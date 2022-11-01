@@ -1,4 +1,4 @@
-package com.myfinancemap.app.dto;
+package com.myfinancemap.app.dto.transaction;
 
 import com.myfinancemap.app.persistence.domain.PaymentMethod;
 import lombok.Data;
