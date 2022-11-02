@@ -4,6 +4,7 @@ import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
+import com.myfinancemap.app.persistence.domain.User;
 
 import java.util.List;
 
@@ -49,4 +50,12 @@ public interface UserService {
      * @return the updated user's data.
      */
     UserDto updateUser(final Long userId, final UpdateUserDto updateUserDto);
+
+    /**
+     * Method for getting the selected entity from repo.
+     *
+     * @param userId id of the user
+     * @return the selected User entity.
+     */
+    User getUserEntityById(final Long userId);
 }

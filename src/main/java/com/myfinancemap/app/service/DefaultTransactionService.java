@@ -1,13 +1,14 @@
 package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
+import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.mapper.TransactionMapper;
 import com.myfinancemap.app.persistence.domain.Transaction;
-import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.repository.TransactionRepository;
-import com.myfinancemap.app.persistence.repository.UserRepository;
+import com.myfinancemap.app.service.interfaces.ShopService;
 import com.myfinancemap.app.service.interfaces.TransactionService;
+import com.myfinancemap.app.service.interfaces.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ValidationException;
@@ -24,14 +25,16 @@ public class DefaultTransactionService implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ShopService shopService;
 
     public DefaultTransactionService(TransactionRepository transactionRepository,
                                      TransactionMapper transactionMapper,
-                                     UserRepository userRepository) {
+                                     UserService userService, ShopService shopService) {
         this.transactionRepository = transactionRepository;
         this.transactionMapper = transactionMapper;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.shopService = shopService;
     }
 
     /**
@@ -48,12 +51,12 @@ public class DefaultTransactionService implements TransactionService {
      */
     @Override
     public TransactionDto createTransaction(final Long userId,
-                                            final TransactionDto transactionDto) {
+                                            final CreateUpdateTransactionDto transactionDto) {
         final Transaction transaction = transactionMapper.toTransaction(transactionDto);
-        transaction.setUser(userRepository.getUserByUserId(userId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Felhasználó nem található!");
-                }));
+        transaction.setUser(userService.getUserEntityById(userId));
+        if (transactionDto.getShopId() != null) {
+            transaction.setShop(shopService.getShopEntityById(transactionDto.getShopId()));
+        }
         transactionRepository.save(transaction);
         return transactionMapper.toTransactionDto(transaction);
     }
@@ -62,15 +65,14 @@ public class DefaultTransactionService implements TransactionService {
      * @inheritDoc
      */
     @Override
-    public TransactionDto updateTransaction(final TransactionDto transactionDto) {
+    public TransactionDto updateTransaction(final CreateUpdateTransactionDto transactionDto) {
         final Transaction transaction = transactionRepository.getTransactionByTransactionId(
                         transactionDto.getTransactionId())
                 .orElseThrow(() -> {
                     throw new NoSuchElementException("Tranzakció nem található!");
                 });
-        final User user = transaction.getUser();
+        transaction.setShop(shopService.getShopEntityById(transactionDto.getShopId()));
         transactionMapper.modifyTransaction(transactionDto, transaction);
-        transaction.setUser(user);
         transactionRepository.saveAndFlush(transaction);
         return transactionMapper.toTransactionDto(transaction);
     }

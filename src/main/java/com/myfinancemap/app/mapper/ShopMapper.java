@@ -18,5 +18,7 @@ public interface ShopMapper {
 
     Shop toShop(CreateUpdateShopDto createUpdateShopDto);
 
+    Shop toShop(ShopDto createUpdateShopDto);
+
     void modifyShop(CreateUpdateShopDto shopDto, @MappingTarget Shop shop);
 }

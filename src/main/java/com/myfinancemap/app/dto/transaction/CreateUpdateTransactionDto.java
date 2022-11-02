@@ -1,6 +1,5 @@
 package com.myfinancemap.app.dto.transaction;
 
-import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.persistence.domain.PaymentMethod;
 import lombok.Data;
 
@@ -8,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class TransactionDto {
+public class CreateUpdateTransactionDto {
     private Long transactionId;
     private String description;
     private String currency;
@@ -16,5 +15,5 @@ public class TransactionDto {
     private PaymentMethod paymentMethod;
     private Boolean isIncome;
     private LocalDate issuedAt;
-    private ShopDto shop;
+    private Long shopId;
 }

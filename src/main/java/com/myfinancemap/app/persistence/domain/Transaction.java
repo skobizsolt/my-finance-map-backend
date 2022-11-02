@@ -36,4 +36,7 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
+    @ManyToOne
+    @JoinColumn(name = "shopId", referencedColumnName = "shopId")
+    private Shop shop;
 }

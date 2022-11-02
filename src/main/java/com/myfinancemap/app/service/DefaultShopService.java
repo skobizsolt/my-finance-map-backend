@@ -11,7 +11,6 @@ import com.myfinancemap.app.service.interfaces.ShopService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class DefaultShopService implements ShopService {
@@ -40,25 +39,16 @@ public class DefaultShopService implements ShopService {
     }
 
     /**
-     * Method for getting the data of a selected Shop.
-     *
-     * @param shopId id of the shop
-     * @return the selected shop as a dto.
+     * @inheritDoc
      */
     @Override
     public ShopDto getShopById(final Long shopId) {
-        final Shop shop = shopRepository.getShopByShopId(shopId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Bolt nem található!");
-                });
+        final Shop shop = getShopEntityById(shopId);
         return shopMapper.toShopDto(shop);
     }
 
     /**
-     * Method for creating a shop.
-     *
-     * @param createShopDto dto with data we want to create the shop with
-     * @return the selected Shop as a dto.
+     * @inheritDoc
      */
     @Override
     public ShopDto createShop(final CreateUpdateShopDto createShopDto) {
@@ -73,18 +63,11 @@ public class DefaultShopService implements ShopService {
     }
 
     /**
-     * Method for updating a shop.
-     *
-     * @param shopId        id of the shop.
-     * @param createUpdateShopDto dto with date we want to update the shop with
-     * @return the updated Shop as a dto.
+     * @inheritDoc
      */
     @Override
     public ShopDto updateShop(final Long shopId, final CreateUpdateShopDto createUpdateShopDto) {
-        final Shop shop = shopRepository.getShopByShopId(shopId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Profil nem található!");
-                });
+        final Shop shop = getShopEntityById(shopId);
         // updating the address
         addressService.updateAddress(shop.getAddress().getAddressId(), createUpdateShopDto.getAddress());
         // get business category
@@ -97,17 +80,20 @@ public class DefaultShopService implements ShopService {
     }
 
     /**
-     * Method for deleting a shop.
-     *
-     * @param shopId id of the shop we want to delete.
+     * @inheritDoc
      */
     @Override
     public void deleteShop(final Long shopId) {
-        final Shop shop = shopRepository.getShopByShopId(shopId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Profil nem található!");
-                });
+        final Shop shop = getShopEntityById(shopId);
         shopRepository.delete(shop);
         addressService.deleteAddress(shop.getAddress().getAddressId());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Shop getShopEntityById(final Long shopId) {
+        return shopRepository.getShopByShopId(shopId).orElse(null);
     }
 }

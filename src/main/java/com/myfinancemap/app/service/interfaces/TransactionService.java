@@ -1,6 +1,7 @@
 package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
+import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public interface TransactionService {
      * @return TransactionDto, containing created Transaction data.
      */
     TransactionDto createTransaction(final Long userId,
-                                     final TransactionDto transactionDto);
+                                     final CreateUpdateTransactionDto transactionDto);
 
     /**
      * Method for updating an existing transaction
@@ -34,7 +35,7 @@ public interface TransactionService {
      * @param transactionDto data from json
      * @return TransactionDto, containing updated Transaction data.
      */
-    TransactionDto updateTransaction(final TransactionDto transactionDto);
+    TransactionDto updateTransaction(final CreateUpdateTransactionDto transactionDto);
 
     /**
      * Method for deleting an existing transaction.

@@ -44,10 +44,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public UserDto getUserById(Long userId) {
-        final User user = userRepository.getUserByUserId(userId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Felhasználó nem található!");
-                });
+        final User user = getUserEntityById(userId);
         return userMapper.toUserDto(user);
     }
 
@@ -69,27 +66,35 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void deleteUser(Long userId) {
-        final User user = userRepository.getUserByUserId(userId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Felhasználó nem található!");
-                });
+        final User user = getUserEntityById(userId);
         // delete user
         userRepository.delete(user);
         //delete profile
         profileService.deleteProfile(user.getProfile().getProfileId());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public UserDto updateUser(Long userId, UpdateUserDto updateUserDto) {
-        final User user = userRepository.getUserByUserId(userId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Felhasználó nem található!");
-                });
+        final User user = getUserEntityById(userId);
         //updating profile
         profileService.updateProfile(user.getProfile().getProfileId(), updateUserDto.getProfile());
         //updating user
         userMapper.modifyUser(updateUserDto, user);
         userRepository.saveAndFlush(user);
         return userMapper.toUserDto(user);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public User getUserEntityById(final Long userId) {
+        return userRepository.getUserByUserId(userId)
+                .orElseThrow(() -> {
+                    throw new NoSuchElementException("Felhasználó nem található!");
+                });
     }
 }

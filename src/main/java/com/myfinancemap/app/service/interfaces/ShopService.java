@@ -2,6 +2,7 @@ package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
+import com.myfinancemap.app.persistence.domain.Shop;
 
 import java.util.List;
 
@@ -47,4 +48,12 @@ public interface ShopService {
      * @param shopId id of the shop we want to delete.
      */
     void deleteShop(final Long shopId);
+
+    /**
+     * Method for getting the selected entity from repo.
+     *
+     * @param shopId id of the shop
+     * @return the selected Shop entity.
+     */
+    Shop getShopEntityById(final Long shopId);
 }

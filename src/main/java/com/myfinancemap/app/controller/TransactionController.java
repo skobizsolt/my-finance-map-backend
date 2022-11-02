@@ -1,6 +1,7 @@
 package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
+import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.service.interfaces.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class TransactionController {
     @PostMapping(value = "/{userId}/new")
     @Operation(summary = "Create new transaction")
     public ResponseEntity<TransactionDto> createTransaction(@PathVariable final Long userId,
-                                                            @Valid @RequestBody final TransactionDto transactionDto) {
+                                                            @Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. userId = {}, transactionDto = {}", userId, transactionDto);
         return ResponseEntity.ok().body(transactionService.createTransaction(userId, transactionDto));
     }
@@ -56,12 +57,12 @@ public class TransactionController {
     /**
      * Controller for updating an existing Transaction.
      *
-     * @param transactionDto given data for creating the transaction.
+     * @param transactionDto given data to update the transaction.
      * @return the updated Transaction as a dto.
      */
     @PutMapping(value = "/update")
     @Operation(summary = "Update existing transaction")
-    public ResponseEntity<TransactionDto> updateTransaction(@Valid @RequestBody final TransactionDto transactionDto) {
+    public ResponseEntity<TransactionDto> updateTransaction(@Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. transactionDto = {}", transactionDto);
         return ResponseEntity.ok().body(transactionService.updateTransaction(transactionDto));
     }
@@ -72,9 +73,9 @@ public class TransactionController {
      * @param transactionId id of the transaction
      * @return 200 OK if the transaction is found.
      */
-    @DeleteMapping
+    @DeleteMapping(value = "/{transactionId}/delete")
     @Operation(summary = "Delete existing transaction")
-    public ResponseEntity<Void> deleteTransaction(@RequestParam final Long transactionId) {
+    public ResponseEntity<Void> deleteTransaction(@PathVariable final Long transactionId) {
         log.info("Endpoint invoked. transactionId = {}", transactionId);
         transactionService.deleteTransaction(transactionId);
         return ResponseEntity.ok().build();
