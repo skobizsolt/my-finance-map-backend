@@ -95,5 +95,5 @@ INSERT INTO transaction (cost, currency, description, is_income, issued_at, paym
 ('20360.00', 'HUF', 'fulbevalo', b'0', '2022-11-27', 1, 1),
 ('50000.00', 'HUF', 'crypto bevétel', b'1', '2022-11-01', 1, 1),
 ('150000.00', 'HUF', 'novemberi fizu', b'1', '2022-11-02', 1, 1),
-('10000.00', 'HUF', 'crypto bevétel', b'1', '2022-11-01', 2, 2),
-('350100.00', 'HUF', 'novemberi fizu', b'1', '2022-11-02', 2, 2);
+('10000.00', 'HUF', 'crypto bevétel', b'1', '2022-11-01', 1, 2),
+('350100.00', 'HUF', 'novemberi fizu', b'1', '2022-11-02', 1, 2);
