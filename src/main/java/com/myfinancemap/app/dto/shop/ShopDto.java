@@ -2,9 +2,13 @@ package com.myfinancemap.app.dto.shop;
 
 import com.myfinancemap.app.dto.address.AddressDto;
 import com.myfinancemap.app.dto.businesscategory.BusinessCategoryDto;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class ShopDto {
     private Long shopId;
     private BusinessCategoryDto businessCategory;

@@ -1,9 +1,13 @@
 package com.myfinancemap.app.dto.shop;
 
 import com.myfinancemap.app.dto.address.UpdateAddressDto;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class CreateUpdateShopDto {
     private String name;
     private Long categoryId;

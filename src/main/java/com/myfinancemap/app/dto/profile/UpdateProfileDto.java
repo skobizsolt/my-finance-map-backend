@@ -1,11 +1,15 @@
 package com.myfinancemap.app.dto.profile;
 
 import com.myfinancemap.app.dto.address.UpdateAddressDto;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class UpdateProfileDto {
     private String firstName;
     private String lastName;

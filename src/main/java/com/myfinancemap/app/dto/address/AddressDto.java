@@ -1,16 +1,12 @@
 package com.myfinancemap.app.dto.address;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class AddressDto {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class AddressDto extends UpdateAddressDto {
     private Long addressId;
-    private String postalCode;
-    private String country;
-    private String state;
-    private String city;
-    private String streetName;
-    private String streetType;
-    private String houseNumber;
-    private String afterHouseNumber;
 }
