@@ -63,13 +63,13 @@ public class ShopController {
     /**
      * Controller for updating an existing shop.
      *
-     * @param shopId id of the shop we want to update
+     * @param shopId              id of the shop we want to update
      * @param createUpdateShopDto given data for modify the shop data.
      * @return the updated Shop as a dto.
      */
-    @PutMapping(value = "/{shopId}/update")
+    @PutMapping(value = "/update")
     @Operation(summary = "Update an existing shop")
-    public ResponseEntity<ShopDto> updateTransaction(@PathVariable final Long shopId,
+    public ResponseEntity<ShopDto> updateTransaction(@RequestParam final Long shopId,
                                                      @Valid @RequestBody final CreateUpdateShopDto createUpdateShopDto) {
         log.info("Endpoint invoked. shopId = {}, updateShopDto = {}", shopId, createUpdateShopDto);
         return ResponseEntity.ok().body(shopService.updateShop(shopId, createUpdateShopDto));
@@ -81,7 +81,7 @@ public class ShopController {
      * @param shopId id of the shop
      * @return 200 OK if the shop is found.
      */
-    @DeleteMapping(value = "/{shopId}/delete")
+    @DeleteMapping(value = "/delete/{shopId}")
     @Operation(summary = "Delete an existing shop")
     public ResponseEntity<Void> deleteShop(@PathVariable final Long shopId) {
         log.info("Endpoint invoked. shopId = {}", shopId);

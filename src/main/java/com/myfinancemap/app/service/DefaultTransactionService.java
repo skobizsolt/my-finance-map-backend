@@ -58,15 +58,15 @@ public class DefaultTransactionService implements TransactionService {
      * @inheritDoc
      */
     @Override
-    public TransactionDto createTransaction(final Long userId,
-                                            final CreateUpdateTransactionDto transactionDto) {
+    public DetailedTransactionDto createTransaction(final Long userId,
+                                                    final CreateUpdateTransactionDto transactionDto) {
         final Transaction transaction = transactionMapper.toTransaction(transactionDto);
         transaction.setUser(userService.getUserEntityById(userId));
         if (transactionDto.getShopId() != null) {
             transaction.setShop(shopService.getShopEntityById(transactionDto.getShopId()));
         }
         transactionRepository.save(transaction);
-        return transactionMapper.toTransactionDto(transaction);
+        return transactionMapper.toDetailedTransactionDto(transaction);
     }
 
     /**

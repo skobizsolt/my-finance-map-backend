@@ -35,8 +35,8 @@ public interface TransactionService {
      * @param transactionDto data from json
      * @return TransactionDto, containing created Transaction data.
      */
-    TransactionDto createTransaction(final Long userId,
-                                     final CreateUpdateTransactionDto transactionDto);
+    DetailedTransactionDto createTransaction(final Long userId,
+                                             final CreateUpdateTransactionDto transactionDto);
 
     /**
      * Method for updating an existing transaction
@@ -74,14 +74,15 @@ public interface TransactionService {
     /**
      * Method for listing transactions by interval
      *
-     * @param userId id of the user
+     * @param userId   id of the user
      * @param fromDate start date we want entries from
-     * @param toDate end date we want entries from
+     * @param toDate   end date we want entries from
      * @return a List of Transactions.
      */
     List<TransactionDto> getTransactionsByInterval(final Long userId,
                                                    final LocalDate fromDate,
                                                    final LocalDate toDate);
+
     /**
      * Method for display total income/outcome by type.
      *

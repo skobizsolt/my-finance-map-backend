@@ -62,8 +62,8 @@ public class TransactionController {
      */
     @PostMapping(value = "/new")
     @Operation(summary = "Create new transaction")
-    public ResponseEntity<TransactionDto> createTransaction(@RequestParam final Long userId,
-                                                            @Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
+    public ResponseEntity<DetailedTransactionDto> createTransaction(@RequestParam final Long userId,
+                                                                    @Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. userId = {}, transactionDto = {}", userId, transactionDto);
         return ResponseEntity.ok().body(transactionService.createTransaction(userId, transactionDto));
     }
