@@ -1,6 +1,5 @@
 package com.myfinancemap.app.dto.transaction;
 
-import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.persistence.domain.PaymentMethod;
 import lombok.Data;
 
@@ -16,5 +15,4 @@ public class TransactionDto {
     private PaymentMethod paymentMethod;
     private Boolean isIncome;
     private LocalDate issuedAt;
-    private ShopDto shop;
 }

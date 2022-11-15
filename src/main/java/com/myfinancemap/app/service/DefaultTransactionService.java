@@ -2,6 +2,7 @@ package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
 import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
+import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.mapper.TransactionMapper;
 import com.myfinancemap.app.persistence.domain.Transaction;
@@ -43,7 +44,14 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     public List<TransactionDto> getTransactionListById(final Long userId) {
         return transactionMapper.toTransactionDtoList(
-                transactionRepository.findByUserUserId(userId));
+                transactionRepository.findByUserId(userId));
+    }
+
+    @Override
+    public DetailedTransactionDto getTransactionById(final Long transactionId) {
+        return transactionMapper.toDetailedTransactionDto(transactionRepository.getTransactionByTransactionId(transactionId).orElseThrow(() -> {
+            throw new NoSuchElementException("Tranzakció nem található!");
+        }));
     }
 
     /**
@@ -95,7 +103,7 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     public List<TransactionDto> getTransactionListByIdAndCurrency(Long userId, String currency) {
         return transactionMapper.toTransactionDtoList(
-                transactionRepository.findByUserUserIdAndCurrencyEquals(userId, currency));
+                transactionRepository.findByUserIdAndCurrency(userId, currency));
     }
 
     /**
@@ -104,7 +112,7 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     public List<TransactionDto> getIncomeOrOutcome(Long userId, Boolean isIncome) {
         return transactionMapper.toTransactionDtoList(
-                transactionRepository.findByUserUserIdAndIsIncomeEquals(userId, isIncome));
+                transactionRepository.findByUserIdAndIncomeType(userId, isIncome));
     }
 
     /**

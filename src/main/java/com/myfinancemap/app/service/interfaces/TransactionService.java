@@ -2,6 +2,7 @@ package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
 import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
+import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 
 import java.time.LocalDate;
@@ -18,6 +19,14 @@ public interface TransactionService {
      * @return List, containing TransactionDtos.
      */
     List<TransactionDto> getTransactionListById(final Long userId);
+
+    /**
+     * Method for getting a specific transaction.
+     *
+     * @param transactionId id of the transaction
+     * @return a dto containing all the data of the Transaction.
+     */
+    DetailedTransactionDto getTransactionById(final Long transactionId);
 
     /**
      * Method for creating new transactions.
@@ -81,5 +90,4 @@ public interface TransactionService {
      * @return total income/outcome.
      */
     TotalCostResponse getTotal(final Long userId, final Boolean isIncome);
-
 }

@@ -2,6 +2,7 @@ package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.TotalCostResponse;
 import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
+import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.service.interfaces.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,11 +33,24 @@ public class TransactionController {
      * @param userId id of the user
      * @return a List of Transactions.
      */
-    @GetMapping(value = "/{userId}")
+    @GetMapping
     @Operation(summary = "List all user specific transactions")
-    public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUser(@PathVariable final Long userId) {
+    public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUser(@RequestParam final Long userId) {
         log.info("Endpoint invoked. userId = {}", userId);
         return ResponseEntity.ok().body(transactionService.getTransactionListById(userId));
+    }
+
+    /**
+     * Controller getting a specific transaction.
+     *
+     * @param transactionId id of the user
+     * @return a Transaction.
+     */
+    @GetMapping(value = "/details/{transactionId}")
+    @Operation(summary = "List all user specific transactions")
+    public ResponseEntity<DetailedTransactionDto> getTransactionDataById(@PathVariable final Long transactionId) {
+        log.info("Endpoint invoked. transactionId = {}", transactionId);
+        return ResponseEntity.ok().body(transactionService.getTransactionById(transactionId));
     }
 
     /**
@@ -46,9 +60,9 @@ public class TransactionController {
      * @param transactionDto given data for creating the transaction
      * @return the created Transaction as a dto.
      */
-    @PostMapping(value = "/{userId}/new")
+    @PostMapping(value = "/new")
     @Operation(summary = "Create new transaction")
-    public ResponseEntity<TransactionDto> createTransaction(@PathVariable final Long userId,
+    public ResponseEntity<TransactionDto> createTransaction(@RequestParam final Long userId,
                                                             @Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. userId = {}, transactionDto = {}", userId, transactionDto);
         return ResponseEntity.ok().body(transactionService.createTransaction(userId, transactionDto));
@@ -73,7 +87,7 @@ public class TransactionController {
      * @param transactionId id of the transaction
      * @return 200 OK if the transaction is found.
      */
-    @DeleteMapping(value = "/{transactionId}/delete")
+    @DeleteMapping(value = "/delete/{transactionId}")
     @Operation(summary = "Delete existing transaction")
     public ResponseEntity<Void> deleteTransaction(@PathVariable final Long transactionId) {
         log.info("Endpoint invoked. transactionId = {}", transactionId);
@@ -87,9 +101,9 @@ public class TransactionController {
      * @param userId id of the user
      * @return a List of Transactions.
      */
-    @GetMapping(value = "/{userId}", params = "currency")
+    @GetMapping(params = {"userId", "currency"})
     @Operation(summary = "List all user specific transactions by currency")
-    public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUserAndCurrency(@PathVariable final Long userId,
+    public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUserAndCurrency(@RequestParam final Long userId,
                                                                                        @RequestParam final String currency) {
         log.info("Endpoint invoked. userId = {}, currency = {}", userId, currency);
         return ResponseEntity.ok().body(transactionService.getTransactionListByIdAndCurrency(userId, currency));
@@ -102,17 +116,17 @@ public class TransactionController {
      * @param isIncome income if true, expense if false
      * @return a List of Transactions.
      */
-    @GetMapping(value = "/{userId}", params = "isIncome")
+    @GetMapping(params = {"userId", "isIncome"})
     @Operation(summary = "List all user specific transactions by type")
-    public ResponseEntity<List<TransactionDto>> getTransactionsByIncomeOrOutcome(@PathVariable final Long userId,
+    public ResponseEntity<List<TransactionDto>> getTransactionsByIncomeOrOutcome(@RequestParam final Long userId,
                                                                                  @RequestParam final Boolean isIncome) {
         log.info("Endpoint invoked. userId = {}, isIncome = {}", userId, isIncome);
         return ResponseEntity.ok().body(transactionService.getIncomeOrOutcome(userId, isIncome));
     }
 
-    @GetMapping(value = "/{userId}", params = {"fromDate", "toDate"})
+    @GetMapping(params = {"userId", "fromDate", "toDate"})
     @Operation(summary = "List all user specific transactions by specific interval")
-    public ResponseEntity<List<TransactionDto>> getTransactionsByInterval(@PathVariable final Long userId,
+    public ResponseEntity<List<TransactionDto>> getTransactionsByInterval(@RequestParam final Long userId,
                                                                           @RequestParam("fromDate")
                                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                                           @PastOrPresent final LocalDate fromDate,
@@ -130,9 +144,9 @@ public class TransactionController {
      * @param isIncome income if true, expense if false
      * @return a List of Transactions.
      */
-    @GetMapping(value = "/{userId}/total", params = "isIncome")
+    @GetMapping(value = "/total", params = {"userId", "isIncome"})
     @Operation(summary = "Get total income or outcome")
-    public ResponseEntity<TotalCostResponse> getTotalIncomeOrOutcome(@PathVariable final Long userId,
+    public ResponseEntity<TotalCostResponse> getTotalIncomeOrOutcome(@RequestParam final Long userId,
                                                                      @RequestParam final Boolean isIncome) {
         log.info("Endpoint invoked. userId = {}, isIncome = {}", userId, isIncome);
         return ResponseEntity.ok().body(transactionService.getTotal(userId, isIncome));
