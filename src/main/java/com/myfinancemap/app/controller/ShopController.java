@@ -1,5 +1,6 @@
 package com.myfinancemap.app.controller;
 
+import com.myfinancemap.app.dto.ShopCoordinateResponse;
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.service.interfaces.ShopService;
@@ -87,5 +88,17 @@ public class ShopController {
         log.info("Endpoint invoked. shopId = {}", shopId);
         shopService.deleteShop(shopId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Controller for getting public shop coordinates.
+     *
+     * @return List of all shop coordinates and ids.
+     */
+    @GetMapping("/map")
+    @Operation(summary = "List all shops coordinates and ids")
+    public ResponseEntity<List<ShopCoordinateResponse>> getShopCoordinates() {
+        log.info("Endpoint invoked.");
+        return ResponseEntity.ok().body(shopService.getShopCoordinates());
     }
 }

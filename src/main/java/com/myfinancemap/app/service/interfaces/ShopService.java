@@ -1,5 +1,6 @@
 package com.myfinancemap.app.service.interfaces;
 
+import com.myfinancemap.app.dto.ShopCoordinateResponse;
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.persistence.domain.Shop;
@@ -29,7 +30,7 @@ public interface ShopService {
      * Method for creating a shop.
      *
      * @param createShopDto dto with data we want to create the shop with
-     * @return the selected Shop as a dto.
+     * @return the new Shop as a dto.
      */
     ShopDto createShop(final CreateUpdateShopDto createShopDto);
 
@@ -56,4 +57,12 @@ public interface ShopService {
      * @return the selected Shop entity.
      */
     Shop getShopEntityById(final Long shopId);
+
+    /**
+     * Method for getting shop coordinates and its id's for map integration.
+     *
+     * @return List, containing coordinates and shopIds.
+     */
+    List<ShopCoordinateResponse> getShopCoordinates();
+
 }

@@ -1,5 +1,6 @@
 package com.myfinancemap.app.service;
 
+import com.myfinancemap.app.dto.ShopCoordinateResponse;
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.mapper.ShopMapper;
@@ -95,5 +96,13 @@ public class DefaultShopService implements ShopService {
     @Override
     public Shop getShopEntityById(final Long shopId) {
         return shopRepository.getShopByShopId(shopId).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ShopCoordinateResponse> getShopCoordinates() {
+        return shopMapper.toListResponse(shopRepository.findAll());
     }
 }

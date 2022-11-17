@@ -1,5 +1,6 @@
 package com.myfinancemap.app.mapper;
 
+import com.myfinancemap.app.dto.ShopCoordinateResponse;
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.persistence.domain.Shop;
@@ -18,7 +19,9 @@ public interface ShopMapper {
 
     Shop toShop(CreateUpdateShopDto createUpdateShopDto);
 
-    Shop toShop(ShopDto createUpdateShopDto);
-
     void modifyShop(CreateUpdateShopDto shopDto, @MappingTarget Shop shop);
+
+    ShopCoordinateResponse toResponse(Shop shop);
+
+    List<ShopCoordinateResponse> toListResponse(List<Shop> shops);
 }
