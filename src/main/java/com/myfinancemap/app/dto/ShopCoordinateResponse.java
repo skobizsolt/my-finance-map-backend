@@ -1,5 +1,6 @@
 package com.myfinancemap.app.dto;
 
+import com.myfinancemap.app.dto.location.LocationDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,5 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class ShopCoordinateResponse {
     private Long shopId;
-    private String coordinateX;
-    private String coordinateY;
+    private LocationDto location;
 }

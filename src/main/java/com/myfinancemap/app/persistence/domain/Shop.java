@@ -20,8 +20,10 @@ public class Shop {
     private BusinessCategory businessCategory;
     @NotNull
     private String name;
-    private String coordinateX;
-    private String coordinateY;
+    @OneToOne
+    @JoinColumn(name = "locationId", referencedColumnName = "locationId")
+    @NotNull
+    private Location location;
     @ManyToOne
     @JoinColumn(name = "addressId", referencedColumnName = "addressId")
     private Address address;
