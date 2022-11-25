@@ -17,14 +17,14 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long locationId;
-    @Column(precision = 10, scale = 6)
-    @Min(value = 0)
+    @Column(precision = 10, scale = 6, name = "longitude")
+    @Min(value = -180)
     @Max(value = 180)
     @NotNull
     private BigDecimal coordinateX;
-    @Column(precision = 10, scale = 6)
-    @Min(value = 0)
-    @Max(value = 180)
+    @Column(precision = 10, scale = 6, name = "latitude")
+    @Min(value = -90)
+    @Max(value = 90)
     @NotNull
     private BigDecimal coordinateY;
 }

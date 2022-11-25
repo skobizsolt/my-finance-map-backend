@@ -25,7 +25,7 @@ INSERT INTO user (email, is_admin, password, public_id, registration_date, usern
 ('jonasemil@gmail.com', false, 'JonasEmil11', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28 18:28:47', 'emilke11', 1),
 ('kissgabor14@gmail.com', false, 'Gaborka001', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27 11:42:57', 'gabesz77', 2);
 
-INSERT INTO location(coordinatex, coordinatey) VALUES
+INSERT INTO location(longitude, latitude) VALUES
 ('47.689730', '17.644799'),
 ('47.689717', '17.644499'),
 ('47.689809', '17.644551'),
