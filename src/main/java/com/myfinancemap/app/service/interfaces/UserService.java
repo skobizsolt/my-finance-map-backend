@@ -31,9 +31,10 @@ public interface UserService {
      * Method for creating a new user.
      *
      * @param createUserDto provides essential data towards User entity
-     * @return MinimalUserDto that contains basic user data.
+     * @param requestUrl    url of the verification email.
+     * @return a message with the verfication link.
      */
-    MinimalUserDto createUser(final CreateUserDto createUserDto);
+    String registerUser(final CreateUserDto createUserDto, final String requestUrl);
 
     /**
      * Method for removing an existing user.
@@ -58,4 +59,11 @@ public interface UserService {
      * @return the selected User entity.
      */
     User getUserEntityById(final Long userId);
+
+    /**
+     * Method for verifying the new user.
+     *
+     * @param user is the user we want to verify.
+     */
+    void verifyUser(final User user);
 }

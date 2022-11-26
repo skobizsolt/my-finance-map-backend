@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -59,9 +60,11 @@ public class UserController {
      */
     @PostMapping(value = "/register")
     @Operation(summary = "Create new User")
-    public ResponseEntity<MinimalUserDto> createUser(@Valid @RequestBody final CreateUserDto createUserDto) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody final CreateUserDto createUserDto,
+                                                       final HttpServletRequest request) {
         log.info("Endpoint invoked. createUserDto = {}", createUserDto);
-        return ResponseEntity.ok().body(userService.createUser(createUserDto));
+        final String response = userService.registerUser(createUserDto, applicationUrl(request));
+        return ResponseEntity.ok().body(response);
     }
 
     /**
@@ -90,5 +93,13 @@ public class UserController {
         log.info("Endpoint invoked. userId = {}", userId);
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
+    }
+
+    private String applicationUrl(final HttpServletRequest request){
+        return "http://" +
+                request.getServerName() +
+                ":" +
+                request.getServerPort() +
+                request.getContextPath();
     }
 }

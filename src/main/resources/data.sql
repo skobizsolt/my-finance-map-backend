@@ -21,9 +21,13 @@ INSERT INTO profile (birth_date, first_name, last_name, address_id) VALUES
 ('1998-10-18', 'Emil', 'Jonas', 3),
 ('2002-07-14', 'Gabor', 'Kiss', 4);
 
-INSERT INTO user (email, is_admin, password, public_id, registration_date, username, profile_id) VALUES
-('jonasemil@gmail.com', false, 'JonasEmil11', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28 18:28:47', 'emilke11', 1),
-('kissgabor14@gmail.com', false, 'Gaborka001', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27 11:42:57', 'gabesz77', 2);
+INSERT INTO user (email, password, public_id, registration_date, username, profile_id, role, enabled) VALUES
+('jonasemil@gmail.com', 'JonasEmil11', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28', 'emilke11', 1, 0, 0),
+('kissgabor14@gmail.com', 'Gaborka001', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27', 'gabesz77', 2, 0, 0);
+
+INSERT INTO verification_token (expiry_date, token, user_id) VALUES
+('2022-10-28 18:28:47', '8887e501-5a40-4b9e-b178-24d106f3bcf3', 1),
+('2022-10-27 11:42:57', 'f24a2dcd-9dc8-4772-99f2-e1dbb6555752', 2);
 
 INSERT INTO location(longitude, latitude) VALUES
 ('47.689730', '17.644799'),
