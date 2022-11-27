@@ -11,9 +11,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private static final String[] WHITE_LIST_URLS = {
-            "/api/users/register",
-            "/api/auth/verifyRegistration",
-            "/api/auth/resendVerification"
+            "/api/auth/register",
+            "/api/auth/verify-registration",
+            "/api/auth/resend-verification"
     };
 
     @Bean

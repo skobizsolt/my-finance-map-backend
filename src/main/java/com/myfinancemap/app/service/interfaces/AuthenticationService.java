@@ -1,8 +1,10 @@
 package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
@@ -10,6 +12,15 @@ import java.util.Optional;
  * Interface class of the Authentication service.
  */
 public interface AuthenticationService {
+
+    /**
+     * Method for creating a new user.
+     *
+     * @param createUserDto provides essential data towards User entity
+     * @param requestUrl    url of the verification email.
+     * @return a message with the verfication link.
+     */
+    ResponseEntity<String> registerUser(final CreateUserDto createUserDto, final String requestUrl);
 
     /**
      * Method for saving a created authentication token.
@@ -25,7 +36,7 @@ public interface AuthenticationService {
      * @param token authorization token associated to the user
      * @return token verification message.
      */
-    String checkToken(final String token);
+    ResponseEntity<String> checkToken(final String token);
 
     /**
      * Method for generating a new token.
@@ -43,11 +54,13 @@ public interface AuthenticationService {
      */
     void createPasswordResetTokenForUser(final User user, final String token);
 
-    String resetPassword(final PasswordDto passwordDto);
+    String setNewPassword(final PasswordDto passwordDto);
 
     String validatePasswordResetToken(final String token);
 
     Optional<User> getUserByPasswordResetToken(final String token);
 
-    void changePassword(final User user, final String newPassword);
+    ResponseEntity<String> setNewPassword(final User user, final String newPassword);
+
+    ResponseEntity<String> changePassword(final PasswordDto passwordDto);
 }

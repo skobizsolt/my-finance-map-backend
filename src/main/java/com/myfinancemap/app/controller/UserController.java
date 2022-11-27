@@ -1,6 +1,5 @@
 package com.myfinancemap.app.controller;
 
-import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
@@ -10,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -53,21 +50,6 @@ public class UserController {
     }
 
     /**
-     * Creates a new user.
-     *
-     * @param createUserDto provides all essential user data.
-     * @return with MinimalUserDto, containing the created entity's data.
-     */
-    @PostMapping(value = "/register")
-    @Operation(summary = "Create new User")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody final CreateUserDto createUserDto,
-                                                       final HttpServletRequest request) {
-        log.info("Endpoint invoked. createUserDto = {}", createUserDto);
-        final String response = userService.registerUser(createUserDto, applicationUrl(request));
-        return ResponseEntity.ok().body(response);
-    }
-
-    /**
      * Updates user profile with the given data.
      *
      * @param userId for selecting what user should be deleted.
@@ -93,13 +75,5 @@ public class UserController {
         log.info("Endpoint invoked. userId = {}", userId);
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
-    }
-
-    private String applicationUrl(final HttpServletRequest request){
-        return "http://" +
-                request.getServerName() +
-                ":" +
-                request.getServerPort() +
-                request.getContextPath();
     }
 }

@@ -1,6 +1,5 @@
 package com.myfinancemap.app.service.interfaces;
 
-import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
@@ -28,15 +27,6 @@ public interface UserService {
     UserDto getUserById(final Long userId);
 
     /**
-     * Method for creating a new user.
-     *
-     * @param createUserDto provides essential data towards User entity
-     * @param requestUrl    url of the verification email.
-     * @return a message with the verfication link.
-     */
-    String registerUser(final CreateUserDto createUserDto, final String requestUrl);
-
-    /**
      * Method for removing an existing user.
      *
      * @param userId id of the user we want to delete.
@@ -59,13 +49,4 @@ public interface UserService {
      * @return the selected User entity.
      */
     User getUserEntityById(final Long userId);
-
-    /**
-     * Method for verifying the new user.
-     *
-     * @param user is the user we want to verify.
-     */
-    void verifyUser(final User user);
-
-    User getUserEntityByEmail(String email);
 }
