@@ -120,4 +120,9 @@ public class DefaultUserService implements UserService {
         user.setEnabled(true);
         userRepository.save(user);
     }
+
+    @Override
+    public User getUserEntityByEmail(final String email) {
+        return userRepository.getUserByEmail(email).orElse(null);
+    }
 }

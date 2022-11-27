@@ -66,4 +66,6 @@ public interface UserService {
      * @param user is the user we want to verify.
      */
     void verifyUser(final User user);
+
+    User getUserEntityByEmail(String email);
 }
