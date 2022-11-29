@@ -2,7 +2,6 @@ package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.PasswordDto;
 import com.myfinancemap.app.dto.user.CreateUserDto;
-import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -47,9 +45,9 @@ public class AuthenticationController {
      */
     @GetMapping(value = "/verify-registration")
     @Operation(summary = "Verifying the newly created user")
-    public ResponseEntity<String> verifyUser(@RequestParam("token") final String token) {
+    public ResponseEntity<String> verifyRegistration(@RequestParam("token") final String token) {
         log.info("Endpoint invoked. token = {}", token);
-        return authenticationService.checkToken(token);
+        return authenticationService.verifyRegistration(token);
     }
 
     /**
@@ -60,8 +58,8 @@ public class AuthenticationController {
      * @return response message.
      */
     @GetMapping(value = "/resend-verification")
-    @Operation(summary = "Resend verification token")
-    public ResponseEntity<String> resendVerificationToken(@RequestParam("token") final String oldToken,
+    @Operation(summary = "Generates a new, active verification token")
+    public ResponseEntity<String> generateNewVerificationToken(@RequestParam("token") final String oldToken,
                                                           final HttpServletRequest request) {
         log.info("Endpoint invoked. oldToken = {}", oldToken);
         final VerificationToken verificationToken = authenticationService.generateNewVerificationToken(oldToken);
@@ -74,7 +72,7 @@ public class AuthenticationController {
     public ResponseEntity<String> resetPassword(@RequestBody final PasswordDto passwordDto,
                                                 final HttpServletRequest request) {
         log.info("Endpoint invoked. passwordDto = {}", passwordDto);
-        final String token = authenticationService.setNewPassword(passwordDto);
+        final String token = authenticationService.createPasswordResetToken(passwordDto);
         if (token != null) {
             passwordResetTokenMail(applicationUrl(request), token);
             return ResponseEntity.ok().body("Email sent for password reset!");
@@ -84,27 +82,19 @@ public class AuthenticationController {
 
     @PostMapping(value = "/save-password")
     @Operation(summary = "Save new password")
-    public ResponseEntity<String> savePassword(@RequestParam("token") final String token,
+    public ResponseEntity<String> saveNewPassword(@RequestParam("token") final String token,
                                                @RequestBody final PasswordDto passwordDto,
                                                final HttpServletRequest request) {
         log.info("Endpoint invoked. token: {}, passwordDto = {}", token, passwordDto);
-        final String result = authenticationService.validatePasswordResetToken(token);
-        if (!result.equalsIgnoreCase(("valid"))) {
-            return ResponseEntity.badRequest().body("Invalid token!");
-        }
-        Optional<User> user = authenticationService.getUserByPasswordResetToken(token);
-        if (user.isPresent()) {
-            return authenticationService.setNewPassword(user.get(), passwordDto.getNewPassword());
-        }
-        return ResponseEntity.badRequest().body("Password reset not initiated due to error.");
+        return authenticationService.saveNewPassword(token, passwordDto);
     }
 
     @PostMapping(value = "/change-password")
     @Operation(summary = "Change old password to a new one")
-    public ResponseEntity<String> savePassword(@RequestBody final PasswordDto passwordDto,
+    public ResponseEntity<String> changeExistingPassword(@RequestBody final PasswordDto passwordDto,
                                                final HttpServletRequest request) {
         log.info("Endpoint invoked. passwordDto = {}", passwordDto);
-        return authenticationService.changePassword(passwordDto);
+        return authenticationService.changeExistingPassword(passwordDto);
     }
 
     private void passwordResetTokenMail(final String applicationUrl, final String token) {

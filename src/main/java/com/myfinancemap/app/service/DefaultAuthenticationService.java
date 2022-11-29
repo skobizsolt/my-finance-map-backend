@@ -19,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -64,14 +62,13 @@ public class DefaultAuthenticationService implements AuthenticationService {
         // register
         checkMatchingPasswords(createUserDto.getPassword(), createUserDto.getMatchingPassword());
         user.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
+        user.setProfile(profileService.createProfile());
         userRepository.save(user);
         // send verification email
         publisher.publishEvent(
                 new RegistrationEvent(
                         user,
                         requestUrl));
-        // creating a new profile
-        user.setProfile(profileService.createProfile());
         return ResponseEntity.ok().body("Verification email sent to " + user.getEmail());
     }
 
@@ -79,17 +76,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
      * {@inheritDoc}
      */
     @Override
-    public void saveVerificationToken(String token, User user) {
-        final VerificationToken verificationToken
-                = new VerificationToken(token, user);
-        verificationTokenRepository.save(verificationToken);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ResponseEntity<String> checkToken(final String token) {
+    public ResponseEntity<String> verifyRegistration(final String token) {
         final VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElse(null);
         if (verificationToken == null) {
             return getTokenStatusMessage("invalid");
@@ -119,26 +106,80 @@ public class DefaultAuthenticationService implements AuthenticationService {
         return verificationToken;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void createPasswordResetTokenForUser(User user, String token) {
-        final PasswordResetToken passwordResetToken =
-                new PasswordResetToken(token, user);
-        passwordResetTokenRepository.save(passwordResetToken);
-    }
-
-    @Override
-    public String setNewPassword(PasswordDto passwordDto) {
+    public String createPasswordResetToken(PasswordDto passwordDto) {
         final User user = userRepository.getUserByEmail(passwordDto.getEmail()).orElse(null);
         if (user != null) {
             String token = UUID.randomUUID().toString();
-            createPasswordResetTokenForUser(user, token);
+            savePasswordResetTokenForUser(user, token);
             return token;
         }
         return null;
     }
 
-    //TODO: refactor
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    public ResponseEntity<String> saveNewPassword(String token, PasswordDto passwordDto) {
+        final String result = validatePasswordResetToken(token);
+        if (!result.equalsIgnoreCase(("valid"))) {
+            return ResponseEntity.badRequest().body("Invalid token!");
+        }
+        final User user = getUserByPasswordResetToken(token);
+        if (user != null) {
+            return resetPassword(user, passwordDto.getNewPassword());
+        }
+        return ResponseEntity.badRequest().body("Password reset not initiated due to error.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseEntity<String> changeExistingPassword(PasswordDto passwordDto) {
+        final User user = userRepository.getUserByEmail(passwordDto.getEmail()).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        checkIfValidOldPassword(user, passwordDto.getOldPassword());
+        checkMatchingPasswords(passwordDto.getOldPassword(), passwordDto.getMatchingPassword());
+        return resetPassword(user, passwordDto.getNewPassword());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveVerificationToken(String token, User user) {
+        final VerificationToken verificationToken
+                = new VerificationToken(token, user);
+        verificationTokenRepository.save(verificationToken);
+    }
+
+    //region "UTILS"
+    private void checkMatchingPasswords(final String password, final String passwordAgain) {
+        if (!password.equals(passwordAgain)) {
+            throw new ServiceException("Passwords are not matching!");
+        }
+    }
+
+    private ResponseEntity<String> getTokenStatusMessage(final String response) {
+        if (!response.equalsIgnoreCase("valid")) {
+            return ResponseEntity.badRequest().body("Bad user.");
+        }
+        return ResponseEntity.ok().body("Successful verification!");
+    }
+
+    public void savePasswordResetTokenForUser(User user, String token) {
+        final PasswordResetToken passwordResetToken =
+                new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(passwordResetToken);
+    }
+
     public String validatePasswordResetToken(final String token) {
         final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElse(null);
         if (passwordResetToken == null) {
@@ -154,27 +195,15 @@ public class DefaultAuthenticationService implements AuthenticationService {
         return "valid";
     }
 
-    @Override
-    public Optional<User> getUserByPasswordResetToken(final String token) {
-        return Optional.ofNullable(Objects.requireNonNull(passwordResetTokenRepository.findByToken(token).orElse(null)).getUser());
+    public User getUserByPasswordResetToken(final String token) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token).orElse(null);
+        return resetToken != null ? resetToken.getUser() : null;
     }
 
-    @Override
-    public ResponseEntity<String> setNewPassword(final User user, final String newPassword) {
+    public ResponseEntity<String> resetPassword(final User user, final String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return ResponseEntity.ok().body("Password changed successfully!");
-    }
-
-    @Override
-    public ResponseEntity<String> changePassword(PasswordDto passwordDto) {
-        final User user = userRepository.getUserByEmail(passwordDto.getEmail()).orElse(null);
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-        checkIfValidOldPassword(user, passwordDto.getOldPassword());
-        checkMatchingPasswords(passwordDto.getOldPassword(), passwordDto.getMatchingPassword());
-        return setNewPassword(user, passwordDto.getNewPassword());
     }
 
     private void checkIfValidOldPassword(final User user, final String oldPassword) {
@@ -182,17 +211,5 @@ public class DefaultAuthenticationService implements AuthenticationService {
             throw new ServiceException("Invalid password!");
         }
     }
-
-    private void checkMatchingPasswords(final String password, final String passwordAgain) {
-        if (!password.equals(passwordAgain)) {
-            throw new ServiceException("Passwords are not matching!");
-        }
-    }
-
-    private ResponseEntity<String> getTokenStatusMessage(final String response) {
-        if (!response.equalsIgnoreCase("valid")) {
-            return ResponseEntity.badRequest().body("Bad user.");
-        }
-        return ResponseEntity.ok().body("Successful verification!");
-    }
+    //endregion
 }

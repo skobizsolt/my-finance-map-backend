@@ -6,8 +6,6 @@ import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
-
 /**
  * Interface class of the Authentication service.
  */
@@ -22,21 +20,14 @@ public interface AuthenticationService {
      */
     ResponseEntity<String> registerUser(final CreateUserDto createUserDto, final String requestUrl);
 
-    /**
-     * Method for saving a created authentication token.
-     *
-     * @param token used for authentication
-     * @param user  we want to grant it for.
-     */
-    void saveVerificationToken(final String token, final User user);
 
     /**
-     * Method for verifying the token.
+     * Method for verifying the registration.
      *
      * @param token authorization token associated to the user
      * @return token verification message.
      */
-    ResponseEntity<String> checkToken(final String token);
+    ResponseEntity<String> verifyRegistration(final String token);
 
     /**
      * Method for generating a new token.
@@ -47,20 +38,37 @@ public interface AuthenticationService {
     VerificationToken generateNewVerificationToken(final String oldToken);
 
     /**
-     * Method for creating a token for password reset.
+     * Method for create a password reset token.
      *
-     * @param user  is the user we want to give the token
-     * @param token is the token it can initiate pwd reset with.
+     * @param passwordDto dto that contains the email
+     * @return Status message.
      */
-    void createPasswordResetTokenForUser(final User user, final String token);
+    String createPasswordResetToken(final PasswordDto passwordDto);
 
-    String setNewPassword(final PasswordDto passwordDto);
+    /**
+     * Method for saving the new password
+     *
+     * @param token which came from the reset password email
+     * @param passwordDto dto that contains the new pwd twice
+     * @return ResponseEntity whether the pwd change was successful.
+     */
+    ResponseEntity<String> saveNewPassword(final String token, final PasswordDto passwordDto);
 
-    String validatePasswordResetToken(final String token);
+    /**
+     * Method for changing old password to a new one.
+     *
+     * @param passwordDto dto that contains an email, the old pwd and the new pwd twice
+     * @return ResponseEntity whether the pwd change was successful or not.
+     */
+    ResponseEntity<String> changeExistingPassword(final PasswordDto passwordDto);
 
-    Optional<User> getUserByPasswordResetToken(final String token);
+    /**
+     * Method for saving a created authentication token.
+     *
+     * @param token used for authentication
+     * @param user  we want to grant it for.
+     */
+    void saveVerificationToken(final String token, final User user);
 
-    ResponseEntity<String> setNewPassword(final User user, final String newPassword);
 
-    ResponseEntity<String> changePassword(final PasswordDto passwordDto);
 }
