@@ -215,7 +215,7 @@ public class DefaultMailService implements MailService {
                         "                        <tbody>\n" +
                         "                            <tr>\n" +
                         "                                <td style=\"text-align: center; padding:25px 20px 0;\">\n" +
-                        "                                    <p style=\"font-size: 13px;\">© 2022.&nbsp; \n" +
+                        "                                    <p style=\"font-size: 13px;\">2022.&nbsp; \n" +
                         "\t\t\t\t\t\t\t\t\tMyfinance app . Minden jog fenntartva.</p>\n" +
                         "                                </td>\n" +
                         "                            </tr>\n" +
@@ -386,7 +386,7 @@ public class DefaultMailService implements MailService {
                         "                        <tbody>\n" +
                         "                            <tr>\n" +
                         "                                <td style=\"text-align: center; padding:25px 20px 0;\">\n" +
-                        "                                    <p style=\"font-size: 13px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; © 2022.&nbsp; \n" +
+                        "                                    <p style=\"font-size: 13px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2022.&nbsp; \n" +
                         "\t\t\t\t\t\t\t\t\tMyfinance app . Minden jog fenntartva.</p>\n" +
                         "                                </td>\n" +
                         "                            </tr>\n" +
