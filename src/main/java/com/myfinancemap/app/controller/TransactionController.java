@@ -6,7 +6,9 @@ import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.service.interfaces.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +20,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
+@AllArgsConstructor
 @Slf4j
 public class TransactionController {
 
+    @Autowired
     private final TransactionService transactionService;
-
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
 
     /**
      * Controller for listing all user specific transactions.

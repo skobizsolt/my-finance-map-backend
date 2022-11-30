@@ -18,7 +18,6 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
     @Autowired
     private AuthenticationService authenticationService;
 
-
     /**
      * {@inheritDoc}
      */

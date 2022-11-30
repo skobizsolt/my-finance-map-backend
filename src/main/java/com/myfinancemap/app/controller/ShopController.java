@@ -5,7 +5,9 @@ import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.service.interfaces.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/shops")
+@AllArgsConstructor
 @Slf4j
 public class ShopController {
 
+    @Autowired
     private final ShopService shopService;
-
-    public ShopController(ShopService shopService) {
-        this.shopService = shopService;
-    }
 
     /**
      * Controller for listing all shops that exist in the database.

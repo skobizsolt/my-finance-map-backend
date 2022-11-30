@@ -5,7 +5,9 @@ import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
 import com.myfinancemap.app.util.ServerUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +16,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 @Slf4j
 public class AuthenticationController {
 
+    @Autowired
     private final AuthenticationService authenticationService;
-
-    public AuthenticationController(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
 
     /**
      * Creates a new user.

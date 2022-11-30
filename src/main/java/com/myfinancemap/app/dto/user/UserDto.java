@@ -5,12 +5,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
 public class UserDto extends MinimalUserDto {
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private ProfileDto profile;
 }

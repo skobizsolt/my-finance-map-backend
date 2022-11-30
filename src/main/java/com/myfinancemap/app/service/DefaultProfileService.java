@@ -6,6 +6,8 @@ import com.myfinancemap.app.persistence.domain.Profile;
 import com.myfinancemap.app.persistence.repository.ProfileRepository;
 import com.myfinancemap.app.service.interfaces.AddressService;
 import com.myfinancemap.app.service.interfaces.ProfileService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -14,17 +16,15 @@ import java.util.NoSuchElementException;
  * Default implementation of Profile service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultProfileService implements ProfileService {
 
+    @Autowired
     private final ProfileRepository profileRepository;
+    @Autowired
     private final ProfileMapper profileMapper;
+    @Autowired
     private final AddressService addressService;
-
-    public DefaultProfileService(ProfileRepository profileRepository, ProfileMapper profileMapper, AddressService addressService) {
-        this.profileRepository = profileRepository;
-        this.profileMapper = profileMapper;
-        this.addressService = addressService;
-    }
 
     /**
      * @inheritDoc

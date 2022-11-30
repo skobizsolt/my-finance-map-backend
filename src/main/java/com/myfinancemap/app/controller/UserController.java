@@ -5,7 +5,9 @@ import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
 import com.myfinancemap.app.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +18,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 @Slf4j
 public class UserController {
+    @Autowired
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * List all users email and username.

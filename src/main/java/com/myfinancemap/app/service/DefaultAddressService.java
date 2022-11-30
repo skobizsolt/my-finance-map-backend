@@ -6,6 +6,8 @@ import com.myfinancemap.app.mapper.AddressMapper;
 import com.myfinancemap.app.persistence.domain.Address;
 import com.myfinancemap.app.persistence.repository.AddressRepository;
 import com.myfinancemap.app.service.interfaces.AddressService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -14,15 +16,13 @@ import java.util.NoSuchElementException;
  * Default implementation of the Address service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultAddressService implements AddressService {
 
+    @Autowired
     private final AddressRepository addressRepository;
+    @Autowired
     private final AddressMapper addressMapper;
-
-    public DefaultAddressService(AddressRepository addressRepository, AddressMapper addressMapper) {
-        this.addressRepository = addressRepository;
-        this.addressMapper = addressMapper;
-    }
 
     /**
      * @inheritDoc

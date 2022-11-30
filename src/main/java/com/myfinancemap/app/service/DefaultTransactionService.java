@@ -10,6 +10,8 @@ import com.myfinancemap.app.persistence.repository.TransactionRepository;
 import com.myfinancemap.app.service.interfaces.ShopService;
 import com.myfinancemap.app.service.interfaces.TransactionService;
 import com.myfinancemap.app.service.interfaces.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ValidationException;
@@ -21,22 +23,17 @@ import java.util.NoSuchElementException;
  * Default implementation of Transaction service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultTransactionService implements TransactionService {
 
+    @Autowired
     private final TransactionRepository transactionRepository;
+    @Autowired
     private final TransactionMapper transactionMapper;
-
+    @Autowired
     private final UserService userService;
+    @Autowired
     private final ShopService shopService;
-
-    public DefaultTransactionService(TransactionRepository transactionRepository,
-                                     TransactionMapper transactionMapper,
-                                     UserService userService, ShopService shopService) {
-        this.transactionRepository = transactionRepository;
-        this.transactionMapper = transactionMapper;
-        this.userService = userService;
-        this.shopService = shopService;
-    }
 
     /**
      * @inheritDoc

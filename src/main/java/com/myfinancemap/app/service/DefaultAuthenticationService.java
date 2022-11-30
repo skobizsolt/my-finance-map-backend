@@ -14,7 +14,7 @@ import com.myfinancemap.app.service.interfaces.MailService;
 import com.myfinancemap.app.service.interfaces.ProfileService;
 import com.myfinancemap.app.util.ServerUtils;
 import com.myfinancemap.app.util.TokenUtils;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import static com.myfinancemap.app.util.TokenUtils.*;
  * Default implementation of the Authentication service.
  */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class DefaultAuthenticationService implements AuthenticationService {
     @Autowired

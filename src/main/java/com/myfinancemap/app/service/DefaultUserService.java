@@ -8,6 +8,8 @@ import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.repository.UserRepository;
 import com.myfinancemap.app.service.interfaces.ProfileService;
 import com.myfinancemap.app.service.interfaces.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,19 +19,15 @@ import java.util.NoSuchElementException;
  * Default implementation of User service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultUserService implements UserService {
 
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final UserMapper userMapper;
+    @Autowired
     private final ProfileService profileService;
-
-    public DefaultUserService(final UserRepository userRepository,
-                              final UserMapper userMapper,
-                              final ProfileService profileService) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.profileService = profileService;
-    }
 
     /**
      * {@inheritDoc}
