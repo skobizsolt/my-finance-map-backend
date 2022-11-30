@@ -2,8 +2,8 @@ package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.PasswordDto;
 import com.myfinancemap.app.dto.user.CreateUserDto;
-import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
+import com.myfinancemap.app.util.ServerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +26,22 @@ public class AuthenticationController {
     /**
      * Creates a new user.
      *
-     * @param createUserDto provides all essential user data.
+     * @param createUserDto      provides all essential user data
+     * @param httpServletRequest HTTP servlet httpServletRequest
      * @return with MinimalUserDto, containing the created entity's data.
      */
     @PostMapping(value = "/register")
     @Operation(summary = "Create new User")
     public ResponseEntity<String> registerUser(@Valid @RequestBody final CreateUserDto createUserDto,
-                                               final HttpServletRequest request) {
+                                               final HttpServletRequest httpServletRequest) {
         log.info("Endpoint invoked. createUserDto = {}", createUserDto);
-        return authenticationService.registerUser(createUserDto, applicationUrl(request));
+        return authenticationService.registerUser(createUserDto, ServerUtils.applicationUrl(httpServletRequest));
     }
 
     /**
      * Endpoint for verifying a registration.
      *
-     * @param token that refers to the user.
+     * @param token that refers to the user
      * @return response message.
      */
     @GetMapping(value = "/verify-registration")
@@ -51,72 +52,63 @@ public class AuthenticationController {
     }
 
     /**
-     * Endpoint for resending a valid, existing token
+     * Endpoint for resending a valid, existing token.
      *
-     * @param oldToken that refers to the user.
-     * @param request  HTTP servlet.
+     * @param oldToken           that refers to the user's existing token
+     * @param httpServletRequest HTTP servlet request
      * @return response message.
      */
     @GetMapping(value = "/resend-verification")
     @Operation(summary = "Generates a new, active verification token")
-    public ResponseEntity<String> generateNewVerificationToken(@RequestParam("token") final String oldToken,
-                                                          final HttpServletRequest request) {
+    public ResponseEntity<String> sendNewVerificationToken(@RequestParam("token") final String oldToken,
+                                                           final HttpServletRequest httpServletRequest) {
         log.info("Endpoint invoked. oldToken = {}", oldToken);
-        final VerificationToken verificationToken = authenticationService.generateNewVerificationToken(oldToken);
-        resendVerificationTokenEmail(applicationUrl(request), verificationToken);
-        return ResponseEntity.ok().body("New link sent!");
+        return authenticationService.sendNewVerificationToken(oldToken, httpServletRequest);
+
     }
 
+    /**
+     * Endpoint for resetting an old user password
+     *
+     * @param passwordDto        dto that contains an email
+     * @param httpServletRequest HTTP servlet request
+     * @return response message.
+     */
     @PostMapping(value = "/reset-password")
     @Operation(summary = "Reset old password")
     public ResponseEntity<String> resetPassword(@RequestBody final PasswordDto passwordDto,
-                                                final HttpServletRequest request) {
+                                                final HttpServletRequest httpServletRequest) {
         log.info("Endpoint invoked. passwordDto = {}", passwordDto);
-        final String token = authenticationService.createPasswordResetToken(passwordDto);
-        if (token != null) {
-            passwordResetTokenMail(applicationUrl(request), token);
-            return ResponseEntity.ok().body("Email sent for password reset!");
-        }
-        return ResponseEntity.badRequest().body("User not found!");
+        return authenticationService.resetPassword(passwordDto, httpServletRequest);
     }
 
+    /**
+     * Method for changing the users pwd via link
+     *
+     * @param token       that refers to the user
+     * @param passwordDto dto that contains the new pwd twice
+     * @param request     HTTP servlet request
+     * @return return response message.
+     */
     @PostMapping(value = "/save-password")
     @Operation(summary = "Save new password")
     public ResponseEntity<String> saveNewPassword(@RequestParam("token") final String token,
-                                               @RequestBody final PasswordDto passwordDto,
-                                               final HttpServletRequest request) {
+                                                  @RequestBody final PasswordDto passwordDto,
+                                                  final HttpServletRequest request) {
         log.info("Endpoint invoked. token: {}, passwordDto = {}", token, passwordDto);
         return authenticationService.saveNewPassword(token, passwordDto);
     }
 
+    /**
+     * Method for changing existing password.
+     *
+     * @param passwordDto dto that contains email, the old pwd and the new pwd twice.
+     * @return response message.
+     */
     @PostMapping(value = "/change-password")
     @Operation(summary = "Change old password to a new one")
-    public ResponseEntity<String> changeExistingPassword(@RequestBody final PasswordDto passwordDto,
-                                               final HttpServletRequest request) {
+    public ResponseEntity<String> changeExistingPassword(@RequestBody final PasswordDto passwordDto) {
         log.info("Endpoint invoked. passwordDto = {}", passwordDto);
         return authenticationService.changeExistingPassword(passwordDto);
-    }
-
-    private void passwordResetTokenMail(final String applicationUrl, final String token) {
-        final String url = applicationUrl +
-                "/api/auth/save-password?token=" + token;
-
-        log.info("Click to the link to reset your password: {}", url);
-    }
-
-    private void resendVerificationTokenEmail(final String applicationUrl,
-                                              final VerificationToken verificationToken) {
-        final String url = applicationUrl +
-                "/api/auth/verify-registration?token=" + verificationToken.getToken();
-
-        log.info("Click to the link to verify your account: {}", url);
-    }
-
-    private String applicationUrl(final HttpServletRequest request) {
-        return "http://" +
-                request.getServerName() +
-                ":" +
-                request.getServerPort() +
-                request.getContextPath();
     }
 }

@@ -1,10 +1,12 @@
 package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.persistence.domain.User;
-import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
 import org.springframework.http.ResponseEntity;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Interface class of the Authentication service.
@@ -16,7 +18,7 @@ public interface AuthenticationService {
      *
      * @param createUserDto provides essential data towards User entity
      * @param requestUrl    url of the verification email.
-     * @return a message with the verfication link.
+     * @return a message with the verification link.
      */
     ResponseEntity<String> registerUser(final CreateUserDto createUserDto, final String requestUrl);
 
@@ -32,23 +34,25 @@ public interface AuthenticationService {
     /**
      * Method for generating a new token.
      *
-     * @param oldToken authorization token associated to the user
+     * @param oldToken           authorization token associated to the user
+     * @param httpServletRequest HTTP servlet request
      * @return a new token.
      */
-    VerificationToken generateNewVerificationToken(final String oldToken);
+    ResponseEntity<String> sendNewVerificationToken(final String oldToken, final HttpServletRequest httpServletRequest);
 
     /**
      * Method for create a password reset token.
      *
-     * @param passwordDto dto that contains the email
+     * @param passwordDto        dto that contains the email
+     * @param httpServletRequest HTTP servlet request
      * @return Status message.
      */
-    String createPasswordResetToken(final PasswordDto passwordDto);
+    ResponseEntity<String> resetPassword(final PasswordDto passwordDto, final HttpServletRequest httpServletRequest);
 
     /**
      * Method for saving the new password
      *
-     * @param token which came from the reset password email
+     * @param token       value of the tokenwhich came from the reset password email
      * @param passwordDto dto that contains the new pwd twice
      * @return ResponseEntity whether the pwd change was successful.
      */
@@ -65,10 +69,9 @@ public interface AuthenticationService {
     /**
      * Method for saving a created authentication token.
      *
-     * @param token used for authentication
-     * @param user  we want to grant it for.
+     * @param token     value of the token used for authentication
+     * @param user      we want to grant it for.
+     * @param tokenType Type of the token (VERIFY or PASSWORD)
      */
-    void saveVerificationToken(final String token, final User user);
-
-
+    void saveToken(final String token, final User user, final TokenType tokenType);
 }

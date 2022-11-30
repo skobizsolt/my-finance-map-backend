@@ -30,7 +30,7 @@ public interface UserMapper {
     void modifyUser(UpdateUserDto updateUserDto, @MappingTarget User user);
 
     @AfterMapping
-    default void setRole(CreateUserDto createUserDto, @MappingTarget User user) {
+    default void setRole(@MappingTarget User user) {
         user.setRole(AuthRoles.USER);
     }
 }

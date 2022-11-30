@@ -1,75 +1,75 @@
 package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.event.RegistrationEvent;
 import com.myfinancemap.app.mapper.UserMapper;
 import com.myfinancemap.app.persistence.domain.User;
-import com.myfinancemap.app.persistence.domain.auth.PasswordResetToken;
-import com.myfinancemap.app.persistence.domain.auth.VerificationToken;
+import com.myfinancemap.app.persistence.domain.auth.AuthenticationToken;
 import com.myfinancemap.app.persistence.repository.UserRepository;
-import com.myfinancemap.app.persistence.repository.auth.PasswordResetTokenRepository;
-import com.myfinancemap.app.persistence.repository.auth.VerificationTokenRepository;
+import com.myfinancemap.app.persistence.repository.auth.TokenRepository;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
+import com.myfinancemap.app.service.interfaces.MailService;
 import com.myfinancemap.app.service.interfaces.ProfileService;
+import com.myfinancemap.app.util.ServerUtils;
+import com.myfinancemap.app.util.TokenUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
+
+import static com.myfinancemap.app.util.TokenUtils.*;
 
 /**
  * Default implementation of the Authentication service.
  */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class DefaultAuthenticationService implements AuthenticationService {
-
-    private final VerificationTokenRepository verificationTokenRepository;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    @Autowired
+    private final TokenRepository tokenRepository;
+    @Autowired
     private final PasswordEncoder passwordEncoder;
+    @Autowired
     private final UserMapper userMapper;
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final ProfileService profileService;
-
+    @Autowired
+    private final MailService mailService;
+    @Autowired
     private final ApplicationEventPublisher publisher;
-
-    public DefaultAuthenticationService(final VerificationTokenRepository verificationTokenRepository,
-                                        final PasswordResetTokenRepository passwordResetTokenRepository,
-                                        final PasswordEncoder passwordEncoder,
-                                        final UserMapper userMapper,
-                                        final UserRepository userRepository,
-                                        final ProfileService profileService,
-                                        final ApplicationEventPublisher publisher) {
-        this.verificationTokenRepository = verificationTokenRepository;
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
-        this.userRepository = userRepository;
-        this.profileService = profileService;
-        this.publisher = publisher;
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ResponseEntity<String> registerUser(final CreateUserDto createUserDto, final String requestUrl) {
+    public ResponseEntity<String> registerUser(final CreateUserDto createUserDto,
+                                               final String requestUrl) {
         final User user = userMapper.toUser(createUserDto);
         user.setPublicId(UUID.randomUUID().toString());
-        // register
         checkMatchingPasswords(createUserDto.getPassword(), createUserDto.getMatchingPassword());
+        // password encryption
         user.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
-        user.setProfile(profileService.createProfile());
         userRepository.save(user);
         // send verification email
         publisher.publishEvent(
                 new RegistrationEvent(
                         user,
                         requestUrl));
-        return ResponseEntity.ok().body("Verification email sent to " + user.getEmail());
+        return ResponseEntity
+                .ok()
+                .body("Verification email sent to " + user.getEmail());
     }
 
     /**
@@ -77,139 +77,179 @@ public class DefaultAuthenticationService implements AuthenticationService {
      */
     @Override
     public ResponseEntity<String> verifyRegistration(final String token) {
-        final VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElse(null);
-        if (verificationToken == null) {
-            return getTokenStatusMessage("invalid");
-        }
-        final User user = verificationToken.getUser();
-        final Calendar calendar = Calendar.getInstance();
-        final long timeDifference = verificationToken.getExpiryDate().getTime() - calendar.getTime().getTime();
-
-        if (timeDifference <= 0) {
-            verificationTokenRepository.delete(verificationToken);
-            return getTokenStatusMessage("expired");
-        }
-        user.setEnabled(true);
-        userRepository.save(user);
-        return getTokenStatusMessage("valid");
+        final String responseMessage = checkTokenCondition(token, TokenType.VERIFY);
+        return STATUS_VALID.equals(responseMessage)
+                ? ResponseEntity.ok().body("Successful verification!")
+                : ResponseEntity.badRequest()
+                .body("Invalid token! Please send a new registration!");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public VerificationToken generateNewVerificationToken(final String oldToken) {
-        final VerificationToken verificationToken =
-                verificationTokenRepository.findByToken(oldToken).orElse(new VerificationToken());
-        verificationToken.setToken(UUID.randomUUID().toString());
-        verificationTokenRepository.save(verificationToken);
-        return verificationToken;
+    public ResponseEntity<String> sendNewVerificationToken(final String oldToken,
+                                                           final HttpServletRequest httpServletRequest) {
+        final AuthenticationToken verificationToken =
+                getToken(oldToken, TokenType.VERIFY);
+        if (verificationToken != null) {
+            verificationToken.setToken(UUID.randomUUID().toString());
+            tokenRepository.save(verificationToken);
+            mailService.resendVerificationTokenEmail(ServerUtils.applicationUrl(httpServletRequest), verificationToken);
+            return ResponseEntity
+                    .ok()
+                    .body("New link sent!");
+        }
+        return ResponseEntity
+                .badRequest()
+                .body(getBadRequestResponseMessage(STATUS_INVALID));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String createPasswordResetToken(PasswordDto passwordDto) {
+    public ResponseEntity<String> resetPassword(final PasswordDto passwordDto,
+                                                final HttpServletRequest httpServletRequest) {
         final User user = userRepository.getUserByEmail(passwordDto.getEmail()).orElse(null);
         if (user != null) {
-            String token = UUID.randomUUID().toString();
-            savePasswordResetTokenForUser(user, token);
-            return token;
+            final AuthenticationToken existingPasswordToken =
+                    tokenRepository.findTokenByUserId(
+                            user.getUserId(), TokenType.PASSWORD.name()).orElse(null);
+            //Token not exist
+            if (existingPasswordToken == null) {
+                final String newPasswordToken = UUID.randomUUID().toString();
+                saveToken(newPasswordToken, user, TokenType.PASSWORD);
+                mailService.passwordResetTokenMail(
+                        ServerUtils.applicationUrl(httpServletRequest),
+                        newPasswordToken);
+                return ResponseEntity
+                        .ok()
+                        .body("Email sent for password reset!");
+            }
+            mailService.passwordResetTokenMail(
+                    ServerUtils.applicationUrl(httpServletRequest),
+                    existingPasswordToken.getToken());
+            return ResponseEntity
+                    .ok()
+                    .body("New email sent for password reset!");
         }
-        return null;
+        return ResponseEntity
+                .badRequest()
+                .body("User not found!");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ResponseEntity<String> saveNewPassword(String token, PasswordDto passwordDto) {
-        final String result = validatePasswordResetToken(token);
-        if (!result.equalsIgnoreCase(("valid"))) {
-            return ResponseEntity.badRequest().body("Invalid token!");
+    public ResponseEntity<String> saveNewPassword(final String token, final PasswordDto passwordDto) {
+        // checking if passwords are matching
+        checkMatchingPasswords(passwordDto.getNewPassword(), passwordDto.getMatchingPassword());
+        // checking and getting the token
+        final String result = checkTokenCondition(token, TokenType.PASSWORD);
+        final AuthenticationToken passwordToken = getToken(token, TokenType.PASSWORD);
+        // return if token not valid
+        if (!STATUS_VALID.equals(result)) {
+            return ResponseEntity.badRequest().body(getBadRequestResponseMessage(result)
+                    + " Please send a new password reset request!");
         }
-        final User user = getUserByPasswordResetToken(token);
-        if (user != null) {
-            return resetPassword(user, passwordDto.getNewPassword());
+        if (passwordToken != null) {
+            final User user = passwordToken.getUser();
+            // checking whether the token is associated with a user or not
+            if (user != null) {
+                // changing password
+                return changePassword(user, passwordDto.getNewPassword());
+            }
         }
-        return ResponseEntity.badRequest().body("Password reset not initiated due to error.");
+        // if somehow the token is not attached to any user
+        return ResponseEntity
+                .badRequest()
+                .body("Password reset not initiated due to an error.");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ResponseEntity<String> changeExistingPassword(PasswordDto passwordDto) {
+    public ResponseEntity<String> changeExistingPassword(final PasswordDto passwordDto) {
         final User user = userRepository.getUserByEmail(passwordDto.getEmail()).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity
+                    .badRequest()
+                    .body("User not found.");
         }
-        checkIfValidOldPassword(user, passwordDto.getOldPassword());
-        checkMatchingPasswords(passwordDto.getOldPassword(), passwordDto.getMatchingPassword());
-        return resetPassword(user, passwordDto.getNewPassword());
+        if (!passwordEncoder.matches(passwordDto.getOldPassword(), user.getPassword())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Invalid old password!");
+        }
+        checkMatchingPasswords(passwordDto.getNewPassword(), passwordDto.getMatchingPassword());
+        return changePassword(user, passwordDto.getNewPassword());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveVerificationToken(String token, User user) {
-        final VerificationToken verificationToken
-                = new VerificationToken(token, user);
-        verificationTokenRepository.save(verificationToken);
+    public void saveToken(final String token, final User user, final TokenType tokenType) {
+        final AuthenticationToken verificationToken = new AuthenticationToken(token, user);
+        verificationToken.setTokenType(tokenType);
+        tokenRepository.save(verificationToken);
     }
 
-    //region "UTILS"
+    //region UTILITY METHODS
+    private String checkTokenCondition(final String tokenUuid, final TokenType tokenType) {
+        final AuthenticationToken token = getToken(tokenUuid, tokenType);
+        if (token == null) {
+            return STATUS_INVALID;
+        }
+        if (TokenUtils.timeDifference(token) <= 0) {
+            tokenRepository.delete(token);
+            // if the verification time is expired, the registration should be deleted
+            if (tokenType == TokenType.VERIFY) {
+                userRepository.delete(token.getUser());
+            }
+            return STATUS_EXPIRED;
+        }
+        if (tokenType == TokenType.VERIFY) {
+            final User user = token.getUser();
+            user.setEnabled(true);
+            user.setProfile(profileService.createProfile());
+            userRepository.save(user);
+            tokenRepository.delete(token);
+        }
+        return STATUS_VALID;
+    }
+
+    private AuthenticationToken getToken(final String token, final TokenType tokenType) {
+        return tokenRepository.findByToken(token, tokenType.name()).orElse(null);
+    }
+
+    private ResponseEntity<String> changePassword(final User user, final String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return ResponseEntity
+                .ok()
+                .body("Password changed successfully!");
+    }
+
     private void checkMatchingPasswords(final String password, final String passwordAgain) {
         if (!password.equals(passwordAgain)) {
             throw new ServiceException("Passwords are not matching!");
         }
     }
 
-    private ResponseEntity<String> getTokenStatusMessage(final String response) {
-        if (!response.equalsIgnoreCase("valid")) {
-            return ResponseEntity.badRequest().body("Bad user.");
+    private String getBadRequestResponseMessage(final String response) {
+        // checking if the token is exists
+        if (response.equals(STATUS_INVALID)) {
+            return "Invalid token!";
         }
-        return ResponseEntity.ok().body("Successful verification!");
-    }
-
-    public void savePasswordResetTokenForUser(User user, String token) {
-        final PasswordResetToken passwordResetToken =
-                new PasswordResetToken(token, user);
-        passwordResetTokenRepository.save(passwordResetToken);
-    }
-
-    public String validatePasswordResetToken(final String token) {
-        final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElse(null);
-        if (passwordResetToken == null) {
-            return "invalid";
+        // checking if token is expired
+        if (response.equals(STATUS_EXPIRED)) {
+            return "This token is expired!";
         }
-        final Calendar calendar = Calendar.getInstance();
-        final long timeDifference = passwordResetToken.getExpiryDate().getTime() - calendar.getTime().getTime();
-
-        if (timeDifference <= 0) {
-            passwordResetTokenRepository.delete(passwordResetToken);
-            return "expired";
-        }
-        return "valid";
-    }
-
-    public User getUserByPasswordResetToken(final String token) {
-        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token).orElse(null);
-        return resetToken != null ? resetToken.getUser() : null;
-    }
-
-    public ResponseEntity<String> resetPassword(final User user, final String newPassword) {
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-        return ResponseEntity.ok().body("Password changed successfully!");
-    }
-
-    private void checkIfValidOldPassword(final User user, final String oldPassword) {
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new ServiceException("Invalid password!");
-        }
+        return STATUS_VALID;
     }
     //endregion
 }

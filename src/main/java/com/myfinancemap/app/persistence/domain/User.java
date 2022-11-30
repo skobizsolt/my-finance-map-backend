@@ -32,7 +32,7 @@ public class User {
     @Column(length = 60)
     @Size(min = 8, message = "Minimum of 8 characters required")
     private String password;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private AuthRoles role;
     @NotNull
     @PastOrPresent

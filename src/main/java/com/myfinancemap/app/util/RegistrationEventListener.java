@@ -1,5 +1,6 @@
 package com.myfinancemap.app.util;
 
+import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.event.RegistrationEvent;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
@@ -25,10 +26,10 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
     public void onApplicationEvent(final RegistrationEvent event) {
         final User user = event.getUser();
         final String token = UUID.randomUUID().toString();
-        authenticationService.saveVerificationToken(token, user);
+        authenticationService.saveToken(token, user, TokenType.VERIFY);
 
         final String url = event.getApplicationUrl() +
-                "/api/auth/verifyRegistration?token=" + token;
+                "/api/auth/verify-registration?token=" + token;
 
         log.info("Click to the link to verify your account: {}", url);
     }
