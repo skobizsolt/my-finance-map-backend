@@ -4,6 +4,7 @@ import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.event.RegistrationEvent;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
+import com.myfinancemap.app.service.interfaces.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -17,6 +18,8 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private MailService mailService;
 
     /**
      * {@inheritDoc}
@@ -27,9 +30,11 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
         final String token = UUID.randomUUID().toString();
         authenticationService.saveToken(token, user, TokenType.VERIFY);
 
-        final String url = event.getApplicationUrl() +
-                "/api/auth/verify-registration?token=" + token;
-
-        log.info("Click to the link to verify your account: {}", url);
+        // send verification email
+        mailService.sendEmail(
+                event.getApplicationUrl(),
+                token,
+                user.getEmail(),
+                user.getUsername(), EmailType.REGISTRATION_EMAIL);
     }
 }

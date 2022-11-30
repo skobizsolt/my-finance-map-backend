@@ -4,6 +4,7 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: true
     show-sql: true
+
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/my_finance_map?createDatabaseIfNotExist=true
     hibernate:
@@ -11,12 +12,28 @@ spring:
     username: root
     password: rootroot
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   sql:
     init:
       mode: always
+
   mvc:
     format:
       date-time: iso
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          auth: 'true'
+    host: smtp.gmail.com
+    username: myfinancemap@gmail.com
+    password: yzresohpszotyjdl
+    port: '587'
+
+
 springdoc:
   api-docs:
     path: /api-docs

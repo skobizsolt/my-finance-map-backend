@@ -17,9 +17,9 @@
 		<java.version>17</java.version>
 		<mapstruct.version>1.5.2.Final</mapstruct.version>
 		<lombok.version>1.18.24</lombok.version>
-		<openapi.version>1.6.4</openapi.version>
+		<openapi.version>1.6.13</openapi.version>
 		<javax-validation.version>2.0.1.Final</javax-validation.version>
-		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
+		<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -51,7 +51,6 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -88,6 +87,10 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate-validator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 	</dependencies>
 

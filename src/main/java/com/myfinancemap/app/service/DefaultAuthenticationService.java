@@ -12,6 +12,7 @@ import com.myfinancemap.app.persistence.repository.auth.TokenRepository;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
 import com.myfinancemap.app.service.interfaces.MailService;
 import com.myfinancemap.app.service.interfaces.ProfileService;
+import com.myfinancemap.app.util.EmailType;
 import com.myfinancemap.app.util.ServerUtils;
 import com.myfinancemap.app.util.TokenUtils;
 import lombok.AllArgsConstructor;
@@ -57,12 +58,13 @@ public class DefaultAuthenticationService implements AuthenticationService {
     public ResponseEntity<String> registerUser(final CreateUserDto createUserDto,
                                                final String requestUrl) {
         final User user = userMapper.toUser(createUserDto);
-        user.setPublicId(UUID.randomUUID().toString());
+        final String verificationToken = UUID.randomUUID().toString();
+        user.setPublicId(verificationToken);
         checkMatchingPasswords(createUserDto.getPassword(), createUserDto.getMatchingPassword());
         // password encryption
         user.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
+
         userRepository.save(user);
-        // send verification email
         publisher.publishEvent(
                 new RegistrationEvent(
                         user,
@@ -95,7 +97,12 @@ public class DefaultAuthenticationService implements AuthenticationService {
         if (verificationToken != null) {
             verificationToken.setToken(UUID.randomUUID().toString());
             tokenRepository.save(verificationToken);
-            mailService.resendVerificationTokenEmail(ServerUtils.applicationUrl(httpServletRequest), verificationToken);
+            mailService.sendEmail(
+                    ServerUtils.applicationUrl(httpServletRequest),
+                    verificationToken.getToken(),
+                    verificationToken.getUser().getEmail(),
+                    verificationToken.getUser().getUsername(),
+                    EmailType.REGISTRATION_EMAIL);
             return ResponseEntity
                     .ok()
                     .body("New link sent!");
@@ -120,16 +127,22 @@ public class DefaultAuthenticationService implements AuthenticationService {
             if (existingPasswordToken == null) {
                 final String newPasswordToken = UUID.randomUUID().toString();
                 saveToken(newPasswordToken, user, TokenType.PASSWORD);
-                mailService.passwordResetTokenMail(
+                mailService.sendEmail(
                         ServerUtils.applicationUrl(httpServletRequest),
-                        newPasswordToken);
+                        newPasswordToken,
+                        passwordDto.getEmail(),
+                        user.getUsername(),
+                        EmailType.RESET_PASSWORD_EMAIL);
                 return ResponseEntity
                         .ok()
                         .body("Email sent for password reset!");
             }
-            mailService.passwordResetTokenMail(
+            mailService.sendEmail(
                     ServerUtils.applicationUrl(httpServletRequest),
-                    existingPasswordToken.getToken());
+                    existingPasswordToken.getToken(),
+                    passwordDto.getEmail(),
+                    user.getUsername(),
+                    EmailType.RESET_PASSWORD_EMAIL);
             return ResponseEntity
                     .ok()
                     .body("New email sent for password reset!");
