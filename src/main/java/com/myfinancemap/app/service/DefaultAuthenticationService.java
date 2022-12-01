@@ -1,8 +1,10 @@
 package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.TokenDto;
 import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.dto.user.CreateUserDto;
+import com.myfinancemap.app.dto.user.LoginDto;
 import com.myfinancemap.app.event.RegistrationEvent;
 import com.myfinancemap.app.mapper.UserMapper;
 import com.myfinancemap.app.persistence.domain.User;
@@ -23,6 +25,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -192,7 +195,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
                     .badRequest()
                     .body("User not found.");
         }
-        if (!passwordEncoder.matches(passwordDto.getOldPassword(), user.getPassword())) {
+        if (checkIfGivenPasswordIsIncorrect(passwordDto.getOldPassword(), user.getPassword())) {
             return ResponseEntity
                     .badRequest()
                     .body("Invalid old password!");
@@ -209,6 +212,21 @@ public class DefaultAuthenticationService implements AuthenticationService {
         final AuthenticationToken verificationToken = new AuthenticationToken(token, user);
         verificationToken.setTokenType(tokenType);
         tokenRepository.save(verificationToken);
+    }
+
+    @Override
+    public ResponseEntity<TokenDto> login(final LoginDto loginDto) {
+        final User user = userRepository.getUserByUsername(loginDto.getUsername())
+                .orElseThrow(() -> new NotFoundException(String.format("User with name '%s' have been not found.", loginDto.getUsername())));
+        if (checkIfGivenPasswordIsIncorrect(loginDto.getPassword(), user.getPassword())) {
+            throw new ServiceException("Password is incorrect!");
+        }
+
+        final String jwtToken = TokenUtils.createJwtToken(user);
+
+        final TokenDto tokenDto = new TokenDto();
+        tokenDto.setToken(jwtToken);
+        return ResponseEntity.ok().body(tokenDto);
     }
 
     //region UTILITY METHODS
@@ -263,6 +281,10 @@ public class DefaultAuthenticationService implements AuthenticationService {
             return "This token is expired!";
         }
         return STATUS_VALID;
+    }
+
+    private boolean checkIfGivenPasswordIsIncorrect(final String givenPassword, final String existingPassword) {
+        return !passwordEncoder.matches(givenPassword, existingPassword);
     }
     //endregion
 }

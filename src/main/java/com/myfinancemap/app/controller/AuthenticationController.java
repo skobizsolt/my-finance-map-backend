@@ -1,13 +1,16 @@
 package com.myfinancemap.app.controller;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.TokenDto;
 import com.myfinancemap.app.dto.user.CreateUserDto;
+import com.myfinancemap.app.dto.user.LoginDto;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
 import com.myfinancemap.app.util.ServerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -110,5 +113,12 @@ public class AuthenticationController {
     public ResponseEntity<String> changeExistingPassword(@RequestBody final PasswordDto passwordDto) {
         log.info("Endpoint invoked. passwordDto = {}", passwordDto);
         return authenticationService.changeExistingPassword(passwordDto);
+    }
+
+    @PostMapping(value = "/login")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Create a login token")
+    public ResponseEntity<TokenDto> login(@RequestBody @Valid final LoginDto loginDto) {
+        return authenticationService.login(loginDto);
     }
 }

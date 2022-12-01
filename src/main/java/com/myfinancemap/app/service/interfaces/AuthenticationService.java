@@ -1,8 +1,10 @@
 package com.myfinancemap.app.service.interfaces;
 
 import com.myfinancemap.app.dto.PasswordDto;
+import com.myfinancemap.app.dto.TokenDto;
 import com.myfinancemap.app.dto.TokenType;
 import com.myfinancemap.app.dto.user.CreateUserDto;
+import com.myfinancemap.app.dto.user.LoginDto;
 import com.myfinancemap.app.persistence.domain.User;
 import org.springframework.http.ResponseEntity;
 
@@ -74,4 +76,12 @@ public interface AuthenticationService {
      * @param tokenType Type of the token (VERIFY or PASSWORD)
      */
     void saveToken(final String token, final User user, final TokenType tokenType);
+
+    /**
+     * Method for get a JWT token for user resources
+     *
+     * @param loginDto dto, containing login data
+     * @return user authorization token.
+     */
+    ResponseEntity<TokenDto> login(final LoginDto loginDto);
 }
