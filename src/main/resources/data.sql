@@ -22,9 +22,9 @@ INSERT INTO profile (birth_date, first_name, last_name, address_id) VALUES
 ('2002-07-14', 'Gabor', 'Kiss', 4);
 
 INSERT INTO user (email, password, public_id, registration_date, username, profile_id, role, enabled) VALUES
-('jonasemil@gmail.com', 'JonasEmil11', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28', 'emilke11', 1, 'USER', 1),
-('kissgabor14@gmail.com', 'Gaborka001', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27', 'gabesz77', 2, 'USER', 1),
-('nagypityu@gmail.com', 'Pityuka001', 'e18f28c9-b5f4-468e-8b50-affa07e9c6c8', '2022-10-27', 'pityu77', null, 'USER', 0);;
+('jonasemil@email.com', 'JonasEmil11', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28', 'emilke11', 1, 'USER', 1),
+('kissgabor14@email.com', 'Gaborka001', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27', 'gabesz77', 2, 'USER', 1),
+('nagypityu@email.com', 'Pityuka001', 'e18f28c9-b5f4-468e-8b50-affa07e9c6c8', '2022-10-27', 'pityu77', null, 'USER', 0);;
 
 INSERT INTO auth_token (expiry_date, token, token_type, user_id) VALUES
 ('2022-10-27 11:42:57', 'f24a2dcd-9dc8-4772-99f2-e1dbb6555752', 'VERIFY', 3),
