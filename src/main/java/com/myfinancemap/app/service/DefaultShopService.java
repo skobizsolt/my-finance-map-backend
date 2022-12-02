@@ -12,6 +12,7 @@ import com.myfinancemap.app.service.interfaces.LocationService;
 import com.myfinancemap.app.service.interfaces.ShopService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,6 +73,7 @@ public class DefaultShopService implements ShopService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ShopDto updateShop(final Long shopId, final CreateUpdateShopDto createUpdateShopDto) {
         final Shop shop = getShopEntityById(shopId);
         // updating the address
@@ -90,6 +92,7 @@ public class DefaultShopService implements ShopService {
     /**
      * {@inheritDoc}
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @Override
     public void deleteShop(final Long shopId) {
         final Shop shop = getShopEntityById(shopId);

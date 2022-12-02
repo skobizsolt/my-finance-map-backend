@@ -5,6 +5,7 @@ import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
 import com.myfinancemap.app.service.interfaces.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class ShopController {
      * @return the created Shop as a dto.
      */
     @PostMapping(value = "/new")
-    @Operation(summary = "Create new shop")
+    @Operation(summary = "Create new shop", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<ShopDto> createShop(@Valid @RequestBody final CreateUpdateShopDto createShopDto) {
         log.info("Endpoint invoked. createShopDto = {}", createShopDto);
         return ResponseEntity.ok().body(shopService.createShop(createShopDto));
@@ -69,7 +70,7 @@ public class ShopController {
      * @return the updated Shop as a dto.
      */
     @PutMapping(value = "/update")
-    @Operation(summary = "Update an existing shop")
+    @Operation(summary = "Update an existing shop", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<ShopDto> updateTransaction(@RequestParam final Long shopId,
                                                      @Valid @RequestBody final CreateUpdateShopDto createUpdateShopDto) {
         log.info("Endpoint invoked. shopId = {}, updateShopDto = {}", shopId, createUpdateShopDto);
@@ -83,7 +84,7 @@ public class ShopController {
      * @return 200 OK if the shop is found.
      */
     @DeleteMapping(value = "/delete/{shopId}")
-    @Operation(summary = "Delete an existing shop")
+    @Operation(summary = "Delete an existing shop", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<Void> deleteShop(@PathVariable final Long shopId) {
         log.info("Endpoint invoked. shopId = {}", shopId);
         shopService.deleteShop(shopId);

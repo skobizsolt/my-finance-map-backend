@@ -10,6 +10,7 @@ import com.myfinancemap.app.service.interfaces.ProfileService;
 import com.myfinancemap.app.service.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class DefaultUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public List<MinimalUserDto> getAllUsers() {
         return userMapper.toMinimalUserDtoList(userRepository.findAll());
     }
@@ -41,6 +43,7 @@ public class DefaultUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public UserDto getUserById(final Long userId) {
         final User user = getUserEntityById(userId);
         return userMapper.toUserDto(user);
@@ -50,6 +53,7 @@ public class DefaultUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public void deleteUser(final Long userId) {
         final User user = getUserEntityById(userId);
         // delete user
@@ -62,6 +66,7 @@ public class DefaultUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public UserDto updateUser(final Long userId, final UpdateUserDto updateUserDto) {
         final User user = getUserEntityById(userId);
         //updating profile

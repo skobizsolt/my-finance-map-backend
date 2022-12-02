@@ -35,8 +35,12 @@ public class TokenUtils {
     }
 
     public static String createJwtToken(final User user) {
-        return Jwts.builder().claim("name", user.getUsername()).setSubject(user.getUsername())
-                .setId(user.getUserId().toString()).setIssuedAt(new Date()).setAudience(JwtAuthenticationFilter.AUDIENCE)
+        return Jwts.builder()
+                .claim("name", user.getUsername())
+                .setSubject(user.getUsername())
+                .setId(user.getUserId().toString())
+                .setIssuedAt(new Date())
+                .setAudience(JwtAuthenticationFilter.AUDIENCE)
                 .setIssuer(JwtAuthenticationFilter.ISSUER)
                 .setExpiration(Date.from(LocalDateTime.now().plusSeconds(JwtAuthenticationFilter.MAX_TIME_TO_LIVE_SEC)
                         .toInstant(ZoneOffset.UTC)))
@@ -44,5 +48,4 @@ public class TokenUtils {
                         new HmacKey(JwtAuthenticationFilter.SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .compact();
     }
-
 }

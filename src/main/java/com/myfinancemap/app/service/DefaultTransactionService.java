@@ -12,6 +12,7 @@ import com.myfinancemap.app.service.interfaces.TransactionService;
 import com.myfinancemap.app.service.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ValidationException;
@@ -36,15 +37,20 @@ public class DefaultTransactionService implements TransactionService {
     private final ShopService shopService;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public List<TransactionDto> getTransactionListById(final Long userId) {
         return transactionMapper.toTransactionDtoList(
                 transactionRepository.findByUserId(userId));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public DetailedTransactionDto getTransactionById(final Long transactionId) {
         return transactionMapper.toDetailedTransactionDto(transactionRepository.getTransactionByTransactionId(transactionId).orElseThrow(() -> {
             throw new NoSuchElementException("Tranzakció nem található!");
@@ -52,9 +58,10 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public DetailedTransactionDto createTransaction(final Long userId,
                                                     final CreateUpdateTransactionDto transactionDto) {
         final Transaction transaction = transactionMapper.toTransaction(transactionDto);
@@ -67,9 +74,10 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public TransactionDto updateTransaction(final CreateUpdateTransactionDto transactionDto) {
         final Transaction transaction = transactionRepository.getTransactionByTransactionId(
                         transactionDto.getTransactionId())
@@ -83,9 +91,10 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public void deleteTransaction(final Long transactionId) {
         final Transaction transaction = transactionRepository.getTransactionByTransactionId(transactionId)
                 .orElseThrow(() -> {
@@ -95,27 +104,30 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public List<TransactionDto> getTransactionListByIdAndCurrency(Long userId, String currency) {
         return transactionMapper.toTransactionDtoList(
                 transactionRepository.findByUserIdAndCurrency(userId, currency));
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public List<TransactionDto> getIncomeOrOutcome(Long userId, Boolean isIncome) {
         return transactionMapper.toTransactionDtoList(
                 transactionRepository.findByUserIdAndIncomeType(userId, isIncome));
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public List<TransactionDto> getTransactionsByInterval(Long userId, LocalDate fromDate, LocalDate toDate) {
         if (fromDate.compareTo(toDate) > 0) {
             throw new ValidationException("Kezdő dátum nem előzheti meg a végdátumot!");
@@ -125,9 +137,10 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public TotalCostResponse getTotal(final Long userId, final Boolean isIncome) {
         final TotalCostResponse response = new TotalCostResponse();
         response.setCost(transactionRepository.getTotalCost(userId, isIncome));
