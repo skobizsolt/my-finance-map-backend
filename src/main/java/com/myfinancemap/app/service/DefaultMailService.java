@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import static com.myfinancemap.app.exception.Error.WRONG_EMAIL_TYPE;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -47,7 +49,7 @@ public class DefaultMailService implements MailService {
             url = applicationUrl;
             subject = null;
             emailText = null;
-            log.info("Email not sent! Wrong emailType");
+            log.error(WRONG_EMAIL_TYPE);
         }
         if (emailText != null) {
             final MimeMessage mimeMessage = javaMailSender.createMimeMessage();

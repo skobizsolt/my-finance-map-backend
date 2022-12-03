@@ -3,6 +3,7 @@ package com.myfinancemap.app.service;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.mapper.UserMapper;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.repository.TransactionRepository;
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+
+import static com.myfinancemap.app.exception.Error.USER_NOT_FOUND;
 
 /**
  * Default implementation of User service.
@@ -85,7 +87,7 @@ public class DefaultUserService implements UserService {
     public User getUserEntityById(final Long userId) {
         return userRepository.getUserByUserId(userId)
                 .orElseThrow(() -> {
-                    throw new NoSuchElementException("Felhasználó nem található!");
+                    throw new ServiceExpection(USER_NOT_FOUND);
                 });
     }
 }

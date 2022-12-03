@@ -2,6 +2,7 @@ package com.myfinancemap.app.service;
 
 import com.myfinancemap.app.dto.location.CreateUpdateLocationDto;
 import com.myfinancemap.app.dto.location.LocationDto;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.mapper.LocationMapper;
 import com.myfinancemap.app.persistence.domain.Location;
 import com.myfinancemap.app.persistence.repository.LocationRepository;
@@ -10,7 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
+import static com.myfinancemap.app.exception.Error.LOCATION_NOT_FOUND;
 
 /**
  * Default implementation of the Location service.
@@ -37,10 +38,7 @@ public class DefaultLocationService implements LocationService {
      */
     @Override
     public LocationDto updateLocation(Long locationId, CreateUpdateLocationDto updateLocationDto) {
-        final Location location = locationRepository.getLocationByLocationId(locationId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("A keresett hely nem található!");
-                });
+        final Location location = getLocation(locationId);
         locationMapper.modifyAddress(updateLocationDto, location);
         locationRepository.saveAndFlush(location);
         return locationMapper.toLocationDto(location);
@@ -51,10 +49,14 @@ public class DefaultLocationService implements LocationService {
      */
     @Override
     public void deleteLocation(Long addressId) {
-        final Location location = locationRepository.getLocationByLocationId(addressId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("A keresett hely nem található!");
-                });
+        final Location location = getLocation(addressId);
         locationRepository.delete(location);
+    }
+
+    private Location getLocation(final Long locationId) {
+        return locationRepository.getLocationByLocationId(locationId)
+                .orElseThrow(() -> {
+                    throw new ServiceExpection(LOCATION_NOT_FOUND);
+                });
     }
 }

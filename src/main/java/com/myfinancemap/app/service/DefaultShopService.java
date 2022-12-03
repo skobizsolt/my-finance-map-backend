@@ -3,6 +3,7 @@ package com.myfinancemap.app.service;
 import com.myfinancemap.app.dto.ShopCoordinateResponse;
 import com.myfinancemap.app.dto.shop.CreateUpdateShopDto;
 import com.myfinancemap.app.dto.shop.ShopDto;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.mapper.ShopMapper;
 import com.myfinancemap.app.persistence.domain.Shop;
 import com.myfinancemap.app.persistence.repository.ShopRepository;
@@ -16,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.myfinancemap.app.exception.Error.SHOP_NOT_FOUND;
 
 /**
  * Default implementation of the Shop service.
@@ -106,7 +109,7 @@ public class DefaultShopService implements ShopService {
      */
     @Override
     public Shop getShopEntityById(final Long shopId) {
-        return shopRepository.getShopByShopId(shopId).orElse(null);
+        return shopRepository.getShopByShopId(shopId).orElseThrow(() -> new ServiceExpection(SHOP_NOT_FOUND));
     }
 
     /**

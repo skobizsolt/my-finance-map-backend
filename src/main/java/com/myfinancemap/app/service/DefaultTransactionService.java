@@ -4,6 +4,7 @@ import com.myfinancemap.app.dto.TotalCostResponse;
 import com.myfinancemap.app.dto.transaction.CreateUpdateTransactionDto;
 import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.mapper.TransactionMapper;
 import com.myfinancemap.app.persistence.domain.Transaction;
 import com.myfinancemap.app.persistence.repository.TransactionRepository;
@@ -15,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
+
+import static com.myfinancemap.app.exception.Error.INCORRECT_DATE_ORDER;
+import static com.myfinancemap.app.exception.Error.TRANSACTION_NOT_FOUND;
 
 /**
  * Default implementation of Transaction service.
@@ -52,9 +54,7 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public DetailedTransactionDto getTransactionById(final Long transactionId) {
-        return transactionMapper.toDetailedTransactionDto(transactionRepository.getTransactionByTransactionId(transactionId).orElseThrow(() -> {
-            throw new NoSuchElementException("Tranzakció nem található!");
-        }));
+        return transactionMapper.toDetailedTransactionDto(getTransactionByItsId(transactionId));
     }
 
     /**
@@ -79,11 +79,7 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public TransactionDto updateTransaction(final CreateUpdateTransactionDto transactionDto) {
-        final Transaction transaction = transactionRepository.getTransactionByTransactionId(
-                        transactionDto.getTransactionId())
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Tranzakció nem található!");
-                });
+        final Transaction transaction = getTransactionByItsId(transactionDto.getTransactionId());
         transaction.setShop(shopService.getShopEntityById(transactionDto.getShopId()));
         transactionMapper.modifyTransaction(transactionDto, transaction);
         transactionRepository.saveAndFlush(transaction);
@@ -96,10 +92,7 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public void deleteTransaction(final Long transactionId) {
-        final Transaction transaction = transactionRepository.getTransactionByTransactionId(transactionId)
-                .orElseThrow(() -> {
-                    throw new NoSuchElementException("Tranzakció nem található!");
-                });
+        final Transaction transaction = getTransactionByItsId(transactionId);
         transactionRepository.delete(transaction);
     }
 
@@ -130,7 +123,7 @@ public class DefaultTransactionService implements TransactionService {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public List<TransactionDto> getTransactionsByInterval(Long userId, LocalDate fromDate, LocalDate toDate) {
         if (fromDate.compareTo(toDate) > 0) {
-            throw new ValidationException("Kezdő dátum nem előzheti meg a végdátumot!");
+            throw new ServiceExpection(INCORRECT_DATE_ORDER);
         }
         return transactionMapper.toTransactionDtoList(
                 transactionRepository.findByInterval(fromDate, toDate, userId));
@@ -145,5 +138,11 @@ public class DefaultTransactionService implements TransactionService {
         final TotalCostResponse response = new TotalCostResponse();
         response.setCost(transactionRepository.getTotalCost(userId, isIncome));
         return response;
+    }
+
+    private Transaction getTransactionByItsId(Long transactionId) {
+        return transactionRepository.getTransactionByTransactionId(transactionId).orElseThrow(() -> {
+            throw new ServiceExpection(TRANSACTION_NOT_FOUND);
+        });
     }
 }
