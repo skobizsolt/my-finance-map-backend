@@ -1,5 +1,6 @@
 package com.myfinancemap.app.mapper;
 
+import com.myfinancemap.app.dto.AuthRoles;
 import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
@@ -8,10 +9,10 @@ import com.myfinancemap.app.persistence.domain.User;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
-@Mapper(uses = ProfileMapper.class, imports = LocalDateTime.class)
+@Mapper(imports = LocalDate.class)
 @Component
 public interface UserMapper {
     @Named("userDtoMapper")
@@ -23,8 +24,13 @@ public interface UserMapper {
     @IterableMapping(qualifiedByName = "minimalUserDtoMapper")
     List<MinimalUserDto> toMinimalUserDtoList(List<User> users);
 
-    @Mapping(target = "registrationDate", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "registrationDate", expression = "java(LocalDate.now())")
     User toUser(CreateUserDto dto);
 
     void modifyUser(UpdateUserDto updateUserDto, @MappingTarget User user);
+
+    @AfterMapping
+    default void setRole(@MappingTarget User user) {
+        user.setRole(AuthRoles.USER);
+    }
 }

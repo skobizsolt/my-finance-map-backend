@@ -10,6 +10,9 @@ import com.myfinancemap.app.service.interfaces.AddressService;
 import com.myfinancemap.app.service.interfaces.BusinessCategoryService;
 import com.myfinancemap.app.service.interfaces.LocationService;
 import com.myfinancemap.app.service.interfaces.ShopService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,24 +21,19 @@ import java.util.List;
  * Default implementation of the Shop service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultShopService implements ShopService {
 
+    @Autowired
     private final ShopRepository shopRepository;
+    @Autowired
     private final ShopMapper shopMapper;
+    @Autowired
     private final AddressService addressService;
+    @Autowired
     private final BusinessCategoryService businessCategoryService;
+    @Autowired
     private final LocationService locationService;
-
-    public DefaultShopService(ShopRepository shopRepository,
-                              ShopMapper shopMapper,
-                              AddressService addressService,
-                              BusinessCategoryService businessCategoryService, LocationService locationService) {
-        this.shopRepository = shopRepository;
-        this.shopMapper = shopMapper;
-        this.addressService = addressService;
-        this.businessCategoryService = businessCategoryService;
-        this.locationService = locationService;
-    }
 
     /**
      * {@inheritDoc}
@@ -75,6 +73,7 @@ public class DefaultShopService implements ShopService {
      * {@inheritDoc}
      */
     @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ShopDto updateShop(final Long shopId, final CreateUpdateShopDto createUpdateShopDto) {
         final Shop shop = getShopEntityById(shopId);
         // updating the address
@@ -93,6 +92,7 @@ public class DefaultShopService implements ShopService {
     /**
      * {@inheritDoc}
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @Override
     public void deleteShop(final Long shopId) {
         final Shop shop = getShopEntityById(shopId);

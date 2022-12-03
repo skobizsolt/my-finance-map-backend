@@ -6,6 +6,8 @@ import com.myfinancemap.app.mapper.LocationMapper;
 import com.myfinancemap.app.persistence.domain.Location;
 import com.myfinancemap.app.persistence.repository.LocationRepository;
 import com.myfinancemap.app.service.interfaces.LocationService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -14,15 +16,13 @@ import java.util.NoSuchElementException;
  * Default implementation of the Location service.
  */
 @Service
+@AllArgsConstructor
 public class DefaultLocationService implements LocationService {
 
+    @Autowired
     private final LocationRepository locationRepository;
+    @Autowired
     private final LocationMapper locationMapper;
-
-    public DefaultLocationService(LocationRepository locationRepository, LocationMapper locationMapper) {
-        this.locationRepository = locationRepository;
-        this.locationMapper = locationMapper;
-    }
 
     /**
      * @inheritDoc

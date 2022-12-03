@@ -2,6 +2,7 @@ package com.myfinancemap.app.persistence.repository;
 
 import com.myfinancemap.app.persistence.domain.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -44,4 +45,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "       AND t.is_income = :isIncome", nativeQuery = true)
     BigDecimal getTotalCost(final Long userId, final Boolean isIncome);
 
+    @Modifying
+    @Query(value = "UPDATE transaction t" +
+            "       SET t.shop_id = NULL" +
+            "       WHERE t.user_id = :userId", nativeQuery = true)
+    void updateShopIdsToNullWhereUserIdIs(final Long userId);
+
+    @Query(value = "SELECT t.transaction_id FROM transaction t " +
+            "       WHERE t.user_id = :userId", nativeQuery = true)
+    List<Long> getIdsByUserId(final Long userId);
 }

@@ -6,7 +6,10 @@ import com.myfinancemap.app.dto.transaction.DetailedTransactionDto;
 import com.myfinancemap.app.dto.transaction.TransactionDto;
 import com.myfinancemap.app.service.interfaces.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +21,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
+@AllArgsConstructor
 @Slf4j
 public class TransactionController {
 
+    @Autowired
     private final TransactionService transactionService;
-
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
 
     /**
      * Controller for listing all user specific transactions.
@@ -34,7 +35,7 @@ public class TransactionController {
      * @return a List of Transactions.
      */
     @GetMapping
-    @Operation(summary = "List all user specific transactions")
+    @Operation(summary = "List all user specific transactions", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUser(@RequestParam final Long userId) {
         log.info("Endpoint invoked. userId = {}", userId);
         return ResponseEntity.ok().body(transactionService.getTransactionListById(userId));
@@ -47,7 +48,7 @@ public class TransactionController {
      * @return a Transaction.
      */
     @GetMapping(value = "/details/{transactionId}")
-    @Operation(summary = "List all user specific transactions")
+    @Operation(summary = "List all user specific transaction data", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<DetailedTransactionDto> getTransactionDataById(@PathVariable final Long transactionId) {
         log.info("Endpoint invoked. transactionId = {}", transactionId);
         return ResponseEntity.ok().body(transactionService.getTransactionById(transactionId));
@@ -61,7 +62,7 @@ public class TransactionController {
      * @return the created Transaction as a dto.
      */
     @PostMapping(value = "/new")
-    @Operation(summary = "Create new transaction")
+    @Operation(summary = "Create new transaction", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<DetailedTransactionDto> createTransaction(@RequestParam final Long userId,
                                                                     @Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. userId = {}, transactionDto = {}", userId, transactionDto);
@@ -75,7 +76,7 @@ public class TransactionController {
      * @return the updated Transaction as a dto.
      */
     @PutMapping(value = "/update")
-    @Operation(summary = "Update existing transaction")
+    @Operation(summary = "Update existing transaction", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<TransactionDto> updateTransaction(@Valid @RequestBody final CreateUpdateTransactionDto transactionDto) {
         log.info("Endpoint invoked. transactionDto = {}", transactionDto);
         return ResponseEntity.ok().body(transactionService.updateTransaction(transactionDto));
@@ -88,7 +89,7 @@ public class TransactionController {
      * @return 200 OK if the transaction is found.
      */
     @DeleteMapping(value = "/delete/{transactionId}")
-    @Operation(summary = "Delete existing transaction")
+    @Operation(summary = "Delete existing transaction", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<Void> deleteTransaction(@PathVariable final Long transactionId) {
         log.info("Endpoint invoked. transactionId = {}", transactionId);
         transactionService.deleteTransaction(transactionId);
@@ -102,7 +103,7 @@ public class TransactionController {
      * @return a List of Transactions.
      */
     @GetMapping(params = {"userId", "currency"})
-    @Operation(summary = "List all user specific transactions by currency")
+    @Operation(summary = "List all user specific transactions by currency", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<List<TransactionDto>> getAllTransactionDataByUserAndCurrency(@RequestParam final Long userId,
                                                                                        @RequestParam final String currency) {
         log.info("Endpoint invoked. userId = {}, currency = {}", userId, currency);
@@ -117,7 +118,7 @@ public class TransactionController {
      * @return a List of Transactions.
      */
     @GetMapping(params = {"userId", "isIncome"})
-    @Operation(summary = "List all user specific transactions by type")
+    @Operation(summary = "List all user specific transactions by type", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<List<TransactionDto>> getTransactionsByIncomeOrOutcome(@RequestParam final Long userId,
                                                                                  @RequestParam final Boolean isIncome) {
         log.info("Endpoint invoked. userId = {}, isIncome = {}", userId, isIncome);
@@ -125,7 +126,7 @@ public class TransactionController {
     }
 
     @GetMapping(params = {"userId", "fromDate", "toDate"})
-    @Operation(summary = "List all user specific transactions by specific interval")
+    @Operation(summary = "List all user specific transactions by specific interval", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<List<TransactionDto>> getTransactionsByInterval(@RequestParam final Long userId,
                                                                           @RequestParam("fromDate")
                                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -145,7 +146,7 @@ public class TransactionController {
      * @return a List of Transactions.
      */
     @GetMapping(value = "/total", params = {"userId", "isIncome"})
-    @Operation(summary = "Get total income or outcome")
+    @Operation(summary = "Get total income or outcome", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<TotalCostResponse> getTotalIncomeOrOutcome(@RequestParam final Long userId,
                                                                      @RequestParam final Boolean isIncome) {
         log.info("Endpoint invoked. userId = {}, isIncome = {}", userId, isIncome);

@@ -1,16 +1,17 @@
 package com.myfinancemap.app.controller;
 
-import com.myfinancemap.app.dto.user.CreateUserDto;
 import com.myfinancemap.app.dto.user.MinimalUserDto;
 import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
 import com.myfinancemap.app.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -18,13 +19,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 @Slf4j
 public class UserController {
+    @Autowired
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * List all users email and username.
@@ -32,7 +31,7 @@ public class UserController {
      * @return 200 OK.
      */
     @GetMapping
-    @Operation(summary = "List all users data")
+    @Operation(summary = "List all users data", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<List<MinimalUserDto>> getUsers() {
         log.info("Endpoint invoked.");
         return ResponseEntity.ok().body(userService.getAllUsers());
@@ -44,24 +43,11 @@ public class UserController {
      * @param userId refers to the user's identity.
      * @return with UserDto, containing User, Profile and Address data.
      */
-    @GetMapping(value = "/{userId}/profile")
-    @Operation(summary = "List all user specific data to profile page")
+    @GetMapping(value = "/{userId}/profile", name = "getUser")
+    @Operation(summary = "List all user specific data to profile page", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<UserDto> getAllUserData(@PathVariable final Long userId) {
         log.info("Endpoint invoked. userId = {}", userId);
         return ResponseEntity.ok().body(userService.getUserById(userId));
-    }
-
-    /**
-     * Creates a new user.
-     *
-     * @param createUserDto provides all essential user data.
-     * @return with MinimalUserDto, containing the created entity's data.
-     */
-    @PostMapping(value = "/register")
-    @Operation(summary = "Create new User")
-    public ResponseEntity<MinimalUserDto> createUser(@Valid @RequestBody final CreateUserDto createUserDto) {
-        log.info("Endpoint invoked. createUserDto = {}", createUserDto);
-        return ResponseEntity.ok().body(userService.createUser(createUserDto));
     }
 
     /**
@@ -71,7 +57,7 @@ public class UserController {
      * @return 200 OK.
      */
     @PutMapping(value = "/{userId}/profile", name = "updateUser")
-    @Operation(summary = "Update user profile and address")
+    @Operation(summary = "Update user profile and address", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<UserDto> updateProfile(@PathVariable final Long userId,
                                                  @RequestBody final UpdateUserDto updateUserDto) {
         log.info("Endpoint invoked. userId = {}, updateUserDto = {}", userId, updateUserDto);
@@ -85,7 +71,7 @@ public class UserController {
      * @return 200 OK.
      */
     @DeleteMapping(value = "/{userId}")
-    @Operation(summary = "Delete user")
+    @Operation(summary = "Delete user", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<Void> deleteUser(@PathVariable final Long userId) {
         log.info("Endpoint invoked. userId = {}", userId);
         userService.deleteUser(userId);
