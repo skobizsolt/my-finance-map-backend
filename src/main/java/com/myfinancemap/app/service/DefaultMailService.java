@@ -51,6 +51,7 @@ public class DefaultMailService implements MailService {
             emailText = null;
             log.error(WRONG_EMAIL_TYPE);
         }
+        log.info("Email sending in progress! URL: {}", url);
         if (emailText != null) {
             final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -62,9 +63,6 @@ public class DefaultMailService implements MailService {
             javaMailSender.send(mimeMessage);
             log.info("{} mail sent!", emailType.name());
         }
-
-
-        log.info("Email sent! URL: {}", url);
     }
 
     private String getRegistrationEmailText(final String url, final String username) {
