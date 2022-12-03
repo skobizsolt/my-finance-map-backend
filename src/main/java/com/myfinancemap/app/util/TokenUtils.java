@@ -1,6 +1,7 @@
 package com.myfinancemap.app.util;
 
 import com.myfinancemap.app.config.JwtAuthenticationFilter;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.domain.auth.AuthenticationToken;
 import io.jsonwebtoken.Jwts;
@@ -13,6 +14,8 @@ import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.myfinancemap.app.exception.Error.UTILITY_CLASS;
+
 public class TokenUtils {
 
     public static final String STATUS_VALID = "valid";
@@ -20,7 +23,7 @@ public class TokenUtils {
     public static final String STATUS_INVALID = "invalid";
 
     private TokenUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new ServiceExpection(UTILITY_CLASS);
     }
 
     public static Date calculateExpiryDate(final int expiryTimeInMinutes) {

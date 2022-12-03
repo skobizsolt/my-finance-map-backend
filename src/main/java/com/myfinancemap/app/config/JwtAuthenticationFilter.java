@@ -1,12 +1,13 @@
 package com.myfinancemap.app.config;
 
+import com.myfinancemap.app.exception.Error;
+import com.myfinancemap.app.exception.ServiceExpection;
 import com.myfinancemap.app.persistence.domain.User;
 import com.myfinancemap.app.persistence.repository.UserRepository;
 import com.myfinancemap.app.security.JwtAuthentication;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.service.spi.ServiceException;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -45,14 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final HmacKey TOKEN_SECRET_KEY = new HmacKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
     @Override
-    @SneakyThrows({InvalidJwtException.class, MalformedClaimException.class, ChangeSetPersister.NotFoundException.class})
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    @SneakyThrows({
+            InvalidJwtException.class,
+            MalformedClaimException.class,
+            ChangeSetPersister.NotFoundException.class,
+            ServletException.class,
+            IOException.class})
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         final String authorizationHeaderValue = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorizationHeaderValue == null
                 || !StringUtils.startsWithIgnoreCase(authorizationHeaderValue, TOKEN_PREFIX)) {
-            throw new ServiceException("Authorization token is missing!");
+            throw new ServiceExpection(Error.MISSING_TOKEN);
         }
 
         final JwtConsumer jwtConsumer = new JwtConsumerBuilder()
