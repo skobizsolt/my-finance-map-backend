@@ -13,18 +13,13 @@ INSERT INTO business_category (category_name) VALUES
 
 INSERT INTO address (after_house_number, city, country, house_number, postal_code, state, street_name, street_type) VALUES
 ('1. em.', 'Gyor', 'Magyarorszag', '1', '9027', 'Gyor-Moson Sopron', 'Budai', 'ut'),
-('fsz. ', 'Gyor', 'Magyarorszag', '1', '9024', 'Gyor-Moson Sopron', 'Vasvari Pal', 'utca'),
-('3.em 2-es ajto', 'Gyor', 'Magyarorszag', '42', '9024', 'Gyor-Moson-Sopron', 'Tancsics Mihaly', 'utca'),
-('2.em. 6-os ajto', 'Gyor', 'Magyarorszag', '16', '9024', 'Gyor-Moson-Sopron', 'Petofi', 'utca');
+('fsz. ', 'Gyor', 'Magyarorszag', '1', '9024', 'Gyor-Moson Sopron', 'Vasvari Pal', 'utca');
 
-INSERT INTO profile (birth_date, first_name, last_name, address_id) VALUES
-('1998-10-18', 'Emil', 'Jonas', 3),
-('2002-07-14', 'Gabor', 'Kiss', 4);
 
-INSERT INTO user (email, password, public_id, registration_date, username, profile_id, role, enabled) VALUES
-('jonasemil@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28', 'emilke11', 1, 'USER', 1),
-('kissgabor14@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27', 'gabesz77', 2, 'USER', 1),
-('nagypityu@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', 'e18f28c9-b5f4-468e-8b50-affa07e9c6c8', '2022-10-27', 'pityu77', null, 'USER', 0);;
+INSERT INTO user (full_name, email, password, public_id, registration_date, username, role, enabled) VALUES
+('Jonas Emil', 'jonasemil@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', '8952a10e-e0e0-4e66-a25e-56799af6d1d0', '2022-10-28', 'emilke11', 'USER', 1),
+('Kiss Gabor', 'kissgabor14@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', '87239190-98b1-438e-984a-2c2534e8c987', '2022-10-27', 'gabesz77', 'USER', 1),
+('Nagy István', 'nagypityu@email.com', '$2a$12$YfBGX185w6RRfa5Y8/QB5OPdymf2v9b91VVsGG0kdAT0dZ03J365a', 'e18f28c9-b5f4-468e-8b50-affa07e9c6c8', '2022-10-27', 'pityu77', 'USER', 0);;
 
 INSERT INTO auth_token (expiry_date, token, token_type, user_id) VALUES
 ('2022-10-27 11:42:57', 'f24a2dcd-9dc8-4772-99f2-e1dbb6555752', 'VERIFY', 3),

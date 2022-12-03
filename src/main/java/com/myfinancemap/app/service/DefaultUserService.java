@@ -5,13 +5,14 @@ import com.myfinancemap.app.dto.user.UpdateUserDto;
 import com.myfinancemap.app.dto.user.UserDto;
 import com.myfinancemap.app.mapper.UserMapper;
 import com.myfinancemap.app.persistence.domain.User;
+import com.myfinancemap.app.persistence.repository.TransactionRepository;
 import com.myfinancemap.app.persistence.repository.UserRepository;
-import com.myfinancemap.app.service.interfaces.ProfileService;
 import com.myfinancemap.app.service.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,7 +29,7 @@ public class DefaultUserService implements UserService {
     @Autowired
     private final UserMapper userMapper;
     @Autowired
-    private final ProfileService profileService;
+    private final TransactionRepository transactionRepository;
 
     /**
      * {@inheritDoc}
@@ -53,13 +54,15 @@ public class DefaultUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public void deleteUser(final Long userId) {
         final User user = getUserEntityById(userId);
+        // delete all user transactions
+        transactionRepository.updateShopIdsToNullWhereUserIdIs(userId);
+        transactionRepository.deleteAllById(transactionRepository.getIdsByUserId(userId));
         // delete user
         userRepository.delete(user);
-        //delete profile
-        profileService.deleteProfile(user.getProfile().getProfileId());
     }
 
     /**
@@ -69,8 +72,6 @@ public class DefaultUserService implements UserService {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasUser(#userId)")
     public UserDto updateUser(final Long userId, final UpdateUserDto updateUserDto) {
         final User user = getUserEntityById(userId);
-        //updating profile
-        profileService.updateProfile(user.getProfile().getProfileId(), updateUserDto.getProfile());
         //updating user
         userMapper.modifyUser(updateUserDto, user);
         userRepository.saveAndFlush(user);

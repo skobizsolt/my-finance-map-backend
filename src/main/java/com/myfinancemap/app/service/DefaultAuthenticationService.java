@@ -13,7 +13,6 @@ import com.myfinancemap.app.persistence.repository.UserRepository;
 import com.myfinancemap.app.persistence.repository.auth.TokenRepository;
 import com.myfinancemap.app.service.interfaces.AuthenticationService;
 import com.myfinancemap.app.service.interfaces.MailService;
-import com.myfinancemap.app.service.interfaces.ProfileService;
 import com.myfinancemap.app.util.EmailType;
 import com.myfinancemap.app.util.ServerUtils;
 import com.myfinancemap.app.util.TokenUtils;
@@ -47,8 +46,6 @@ public class DefaultAuthenticationService implements AuthenticationService {
     private final UserMapper userMapper;
     @Autowired
     private final UserRepository userRepository;
-    @Autowired
-    private final ProfileService profileService;
     @Autowired
     private final MailService mailService;
     @Autowired
@@ -246,7 +243,6 @@ public class DefaultAuthenticationService implements AuthenticationService {
         if (tokenType == TokenType.VERIFY) {
             final User user = token.getUser();
             user.setEnabled(true);
-            user.setProfile(profileService.createProfile());
             userRepository.save(user);
             tokenRepository.delete(token);
         }

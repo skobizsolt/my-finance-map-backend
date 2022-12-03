@@ -19,6 +19,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    private String fullName;
     @Column(unique = true)
     @NotNull
     private String publicId;
@@ -37,8 +38,5 @@ public class User {
     @NotNull
     @PastOrPresent
     private LocalDate registrationDate;
-    @OneToOne
-    @JoinColumn(name = "profileId", referencedColumnName = "profileId")
-    private Profile profile;
     private boolean enabled = false;
 }

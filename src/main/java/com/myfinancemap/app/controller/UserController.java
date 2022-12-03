@@ -43,7 +43,7 @@ public class UserController {
      * @param userId refers to the user's identity.
      * @return with UserDto, containing User, Profile and Address data.
      */
-    @GetMapping(value = "/{userId}/profile")
+    @GetMapping(value = "/{userId}/profile", name = "getUser")
     @Operation(summary = "List all user specific data to profile page", security = {@SecurityRequirement(name = "token")})
     public ResponseEntity<UserDto> getAllUserData(@PathVariable final Long userId) {
         log.info("Endpoint invoked. userId = {}", userId);

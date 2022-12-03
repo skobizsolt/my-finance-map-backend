@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
-@Mapper(uses = ProfileMapper.class, imports = LocalDate.class)
+@Mapper(imports = LocalDate.class)
 @Component
 public interface UserMapper {
     @Named("userDtoMapper")
